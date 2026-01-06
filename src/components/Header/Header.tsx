@@ -14,7 +14,7 @@ const Header = () => {
           <h1
             className="text-2xl font-semibold"
             aria-label="App Name">
-            NSF App
+            JAHID EKBAL MALLICK
           </h1>
         </Link>
 
