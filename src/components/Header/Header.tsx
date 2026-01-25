@@ -7,7 +7,7 @@ import ResponsiveToggleNav from "./ResponsiveToggleNav";
 const Header = () => {
   return (
     <header
-      className="fixed top-0 right-0 left-0 z-50 border-b shadow"
+      className="z-50mx-8 fixed top-0 right-0 left-0 mt-4 rounded-full border-2 border-b-blue-900"
       aria-label="app-header">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <Link href={"/"}>
@@ -21,7 +21,6 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <ResponsiveToggleNav>
             <MobileNav />
-
             <DesktopNav />
           </ResponsiveToggleNav>
 
