@@ -4,10 +4,10 @@ const DesktopNav = () => {
   return (
     <nav className="flex gap-4">
       <Link href={"/"}>Home</Link>
-      <Link href={"/"}>Education</Link>
-      <Link href={"/"}>Experience</Link>
-      <Link href={"/"}>Certificates</Link>
-      <Link href={"/"}>About Me</Link>
+      <Link href={"/education"}>Education</Link>
+      <Link href={"/experience"}>Experience</Link>
+      <Link href={"/certificates"}>Certificates</Link>
+      <Link href={"/about-me"}>About Me</Link>
     </nav>
   );
 };
