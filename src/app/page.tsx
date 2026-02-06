@@ -1,7 +1,9 @@
-import { MorphingText } from "@/components/shadcnui/morphing-text";
+import { Dock, DockIcon } from "@/components/shadcnui/dock";
+;
 import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
+import { Home, Search, Settings } from "lucide-react";
 
 import { Metadata } from "next";
 
@@ -22,6 +24,19 @@ const page = () => {
         <SparklesText className="text-6xl font-bold">JAHID EKBAL MALLICK is a </SparklesText>
 
           <WordRotate className="text-4xl font-bold" words={["Full Stack Developer", "Web Pentester"]} />
+
+
+          <Dock>
+  <DockIcon>
+    <Home />
+  </DockIcon>
+  <DockIcon>
+    <Settings />
+  </DockIcon>
+  <DockIcon>
+    <Search />
+  </DockIcon>
+</Dock>
 
         </div>
 

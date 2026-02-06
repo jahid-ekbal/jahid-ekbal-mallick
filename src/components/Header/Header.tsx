@@ -1,8 +1,9 @@
 import Link from "next/link";
-import ThemeToggleButton from "../Buttons/ThemeToggleButton";
+
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ResponsiveToggleNav from "./ResponsiveToggleNav";
+import { AnimatedThemeToggler } from "../shadcnui/animated-theme-toggler";
 
 const Header = () => {
   return (
@@ -24,7 +25,9 @@ const Header = () => {
             <DesktopNav />
           </ResponsiveToggleNav>
 
-          <ThemeToggleButton />
+          <AnimatedThemeToggler />
+
+          {/* <ThemeToggleButton /> */}
         </div>
       </div>
     </header>
