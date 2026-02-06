@@ -1,9 +1,11 @@
+import { AvatarCircles } from "@/components/shadcnui/avatar-circles";
 import { Dock, DockIcon } from "@/components/shadcnui/dock";
-;
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/shadcnui/input-group";
 import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
-import { Home, Search, Settings } from "lucide-react";
+import { Home, Search, SearchIcon, Settings } from "lucide-react";
+;
 
 import { Metadata } from "next";
 
@@ -21,31 +23,41 @@ const page = () => {
 
       <div className="flex flex-col items-center gap-4 text-center">
 
+        <AvatarCircles className=""
+  
+  avatarUrls={[
+    {
+      imageUrl: "https://avatars.githubusercontent.com/u/168970202?s=400&u=1e985c26e71ba7fd5f594bb330333e516e123bc9&v=4",
+      profileUrl: "https://github.com/jahid-ekbal",
+    },
+  ]}
+/>
+
         <SparklesText className="text-6xl font-bold">JAHID EKBAL MALLICK is a </SparklesText>
 
           <WordRotate className="text-4xl font-bold" words={["Full Stack Developer", "Web Pentester"]} />
 
 
-          <Dock>
+          <Dock className="mt-8 mx-10">
   <DockIcon>
-    <Home />
+    <Home/>
   </DockIcon>
   <DockIcon>
-    <Settings />
+    <Settings/>
   </DockIcon>
   <DockIcon>
-    <Search />
+    <InputGroup>
+  <InputGroupInput placeholder="Search..." />
+  <InputGroupAddon>
+    <SearchIcon />
+  </InputGroupAddon>
+</InputGroup>
   </DockIcon>
 </Dock>
 
         </div>
 
-        {/* <div className="">
-
-          <MorphingText className=" " texts={["Welcome to", "My Portfolio Website"]} />
-
-        </div>
-       */}
+      
 
    
     </section>

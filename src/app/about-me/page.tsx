@@ -1,3 +1,4 @@
+import { MorphingText } from "@/components/shadcnui/morphing-text";
 import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
 import { AnimatedSpan, Terminal, TypingAnimation } from "@/components/shadcnui/terminal";
 import { Metadata } from "next";
@@ -11,6 +12,16 @@ const page = () => {
   return (
     <section className="grid h-[90dvh] place-items-center">
       <SmoothCursor />
+
+      {/* <div className="place-items-center">  <div className="">
+
+          <MorphingText className=" " texts={["My Portfolio Website", " About me section"]} />
+
+        </div>
+      
+       </div> */}
+
+
       <div className="">
         <Terminal>
   <TypingAnimation>bun i jahidekbalmallick@gmail.com compose mail 📧</TypingAnimation>
