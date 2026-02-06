@@ -1,4 +1,5 @@
 import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
+import { AnimatedSpan, Terminal, TypingAnimation } from "@/components/shadcnui/terminal";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,7 +11,14 @@ const page = () => {
   return (
     <section className="grid h-[90dvh] place-items-center">
       <SmoothCursor />
-      <div className=""></div>
+      <div className="">
+        <Terminal>
+  <TypingAnimation>bun i jahidekbalmallick@gmail.com compose mail 📧</TypingAnimation>
+  <AnimatedSpan>✔ Verifying your email address.</AnimatedSpan>
+  <AnimatedSpan>✔ Validating Your all information.</AnimatedSpan>
+  <TypingAnimation>Success! We have successfully verified your information.</TypingAnimation>
+</Terminal>
+      </div>
     </section>
   );
 };
