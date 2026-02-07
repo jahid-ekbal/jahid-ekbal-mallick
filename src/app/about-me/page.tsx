@@ -1,5 +1,4 @@
-import { MorphingText } from "@/components/shadcnui/morphing-text";
-import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
+import { Pointer } from "@/components/shadcnui/pointer";
 import { AnimatedSpan, Terminal, TypingAnimation } from "@/components/shadcnui/terminal";
 import { Metadata } from "next";
 
@@ -11,7 +10,9 @@ export const metadata: Metadata = {
 const page = () => {
   return (
     <section className="grid h-[90dvh] place-items-center">
-      <SmoothCursor />
+      {/* <SmoothCursor /> */}
+
+      <Pointer />
 
       {/* <div className="place-items-center">  <div className="">
 

@@ -8,6 +8,7 @@ const DesktopNav = () => {
       <Link href={"/experience"}>Experience</Link>
       <Link href={"/certificates"}>Certificates</Link>
       <Link href={"/about-me"}>About Me</Link>
+      
     </nav>
   );
 };
