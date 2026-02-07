@@ -1,4 +1,4 @@
-import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
+import { Pointer } from "@/components/shadcnui/pointer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="grid h-[90dvh] place-items-center">
-      <SmoothCursor />
+    <section className="min-h-screen flex flex-col items-center justify-center">
+      <Pointer />
       <div className=""></div>
     </section>
   );
