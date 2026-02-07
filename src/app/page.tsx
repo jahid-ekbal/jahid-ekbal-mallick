@@ -1,10 +1,17 @@
 import { AvatarCircles } from "@/components/shadcnui/avatar-circles";
 import { Dock, DockIcon } from "@/components/shadcnui/dock";
+
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/shadcnui/input-group";
 import { Pointer } from "@/components/shadcnui/pointer";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
 import { Home, SearchIcon, Settings } from "lucide-react";
+
+import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
+import { SparklesText } from "@/components/shadcnui/sparkles-text";
+import { WordRotate } from "@/components/shadcnui/word-rotate";
+import { Home, Settings } from "lucide-react";
+
 ;
 
 import { Metadata } from "next";
@@ -38,7 +45,7 @@ const page = () => {
           <WordRotate className="text-4xl font-bold" words={["Full Stack Developer", "Web Pentester"]} />
 
 
-          <Dock className="mt-8 mx-10">
+          <Dock className="mx-20">
   <DockIcon>
     <Home/>
   </DockIcon>
@@ -46,12 +53,7 @@ const page = () => {
     <Settings/>
   </DockIcon>
   <DockIcon>
-    <InputGroup>
-  <InputGroupInput placeholder="Search..." />
-  <InputGroupAddon>
-    <SearchIcon />
-  </InputGroupAddon>
-</InputGroup>
+   
   </DockIcon>
 </Dock>
 

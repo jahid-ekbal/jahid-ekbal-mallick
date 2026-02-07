@@ -9,8 +9,15 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
+
     <section className="min-h-screen flex flex-col items-center justify-center">
      <Pointer />
+
+    <section className="grid h-[90dvh] place-items-center">
+      {/* <SmoothCursor /> */}
+
+      <Pointer />
+
 
       {/* <div className="place-items-center">  <div className="">
 
