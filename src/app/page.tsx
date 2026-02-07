@@ -1,9 +1,17 @@
 import { AvatarCircles } from "@/components/shadcnui/avatar-circles";
 import { Dock, DockIcon } from "@/components/shadcnui/dock";
+
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/shadcnui/input-group";
+import { Pointer } from "@/components/shadcnui/pointer";
+import { SparklesText } from "@/components/shadcnui/sparkles-text";
+import { WordRotate } from "@/components/shadcnui/word-rotate";
+import { Home, SearchIcon, Settings } from "lucide-react";
+
 import { SmoothCursor } from "@/components/shadcnui/smooth-cursor";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
 import { Home, Settings } from "lucide-react";
+
 ;
 
 import { Metadata } from "next";
@@ -15,9 +23,9 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="grid h-[90dvh] place-items-center">
+    <section className="min-h-screen flex flex-col items-center justify-center ">
 
-      <SmoothCursor />
+   <Pointer />
 
 
       <div className="flex flex-col items-center gap-4 text-center">
