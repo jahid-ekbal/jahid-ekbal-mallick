@@ -1,8 +1,12 @@
 import { AvatarCircles } from "@/components/shadcnui/avatar-circles";
 import { Dock, DockIcon } from "@/components/shadcnui/dock";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/shadcnui/input-group";
+=======
+import { Meteors } from "@/components/shadcnui/meteors";
+>>>>>>> Stashed changes
 =======
 import { Meteors } from "@/components/shadcnui/meteors";
 >>>>>>> Stashed changes
@@ -57,7 +61,11 @@ const page = () => {
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <Dock className="mx-20">
+=======
+          <Dock className="mt-8 mx-10 ">
+>>>>>>> Stashed changes
 =======
           <Dock className="mt-8 mx-10 ">
 >>>>>>> Stashed changes
@@ -69,7 +77,11 @@ const page = () => {
   </DockIcon>
   <DockIcon>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
    
+=======
+    <SearchIcon/>
+>>>>>>> Stashed changes
 =======
     <SearchIcon/>
 >>>>>>> Stashed changes
