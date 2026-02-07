@@ -1,3 +1,5 @@
+
+import { IconCloud } from "@/components/shadcnui/icon-cloud";
 import { Pointer } from "@/components/shadcnui/pointer";
 import { Metadata } from "next";
 
@@ -8,9 +10,13 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center">
-      <Pointer />
-      <div className=""></div>
+    <section className="">
+      <Pointer/>
+      
+      <div className="relative flex size-full items-center justify-center overflow-hidden">
+      <IconCloud />
+    </div>
+      
     </section>
   );
 };

@@ -28,8 +28,8 @@ interface ShineBorderProps extends React.HTMLAttributes<HTMLDivElement> {
  * An animated background border effect component with configurable properties.
  */
 export function ShineBorder({
-  borderWidth = 1,
-  duration = 14,
+  borderWidth = 5,
+  duration = 20,
   shineColor = "#000000",
   className,
   style,
@@ -44,7 +44,7 @@ export function ShineBorder({
           backgroundImage: `radial-gradient(transparent,transparent, ${
             Array.isArray(shineColor) ? shineColor.join(",") : shineColor
           },transparent,transparent)`,
-          backgroundSize: "300% 300%",
+          backgroundSize: "600% 600%",
           mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
           WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
           WebkitMaskComposite: "xor",

@@ -8,9 +8,29 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center">
+    <section className="">
       <Pointer />
-      <div className=""></div>
+      
+      {/* <div style={{ width: '1080px', height: '1080px', position: 'relative' }}>
+  <Antigravity
+    count={300}
+    magnetRadius={10}
+    ringRadius={10}
+    waveSpeed={0.4}
+    waveAmplitude={1}
+    particleSize={2}
+    lerpSpeed={0.1}
+    color="#FF9FFC"
+    autoAnimate={false}
+    particleVariance={1}
+    rotationSpeed={0}
+    depthFactor={1}
+    pulseSpeed={3}
+    particleShape="capsule"
+    fieldStrength={10}
+  />
+</div> */}
+
     </section>
   );
 };

@@ -1,8 +1,13 @@
 import { AvatarCircles } from "@/components/shadcnui/avatar-circles";
 import { Dock, DockIcon } from "@/components/shadcnui/dock";
+<<<<<<< Updated upstream
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/shadcnui/input-group";
+=======
+import { Meteors } from "@/components/shadcnui/meteors";
+>>>>>>> Stashed changes
 import { Pointer } from "@/components/shadcnui/pointer";
+import { ShineBorder } from "@/components/shadcnui/shine-border";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
 import { Home, SearchIcon, Settings } from "lucide-react";
@@ -25,27 +30,37 @@ const page = () => {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center ">
 
+<Meteors number={150} />
    <Pointer />
 
 
-      <div className="flex flex-col items-center gap-4 text-center">
+      <div className="flex flex-col items-center gap-4 text-center ">
 
-        <AvatarCircles className=""
-  
-  avatarUrls={[
+        <div className="relative rounded-s-full rounded-e-full overflow-hidden">
+          <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
+          <AvatarCircles className="cursor-none"
+          avatarUrls={[
     {
       imageUrl: "https://avatars.githubusercontent.com/u/168970202?s=400&u=1e985c26e71ba7fd5f594bb330333e516e123bc9&v=4",
       profileUrl: "https://github.com/jahid-ekbal",
     },
   ]}
 />
+          </div>
 
+        
+
+       
         <SparklesText className="text-6xl font-bold">JAHID EKBAL MALLICK is a </SparklesText>
 
           <WordRotate className="text-4xl font-bold" words={["Full Stack Developer", "Web Pentester"]} />
 
 
+<<<<<<< Updated upstream
           <Dock className="mx-20">
+=======
+          <Dock className="mt-8 mx-10 ">
+>>>>>>> Stashed changes
   <DockIcon>
     <Home/>
   </DockIcon>
@@ -53,7 +68,11 @@ const page = () => {
     <Settings/>
   </DockIcon>
   <DockIcon>
+<<<<<<< Updated upstream
    
+=======
+    <SearchIcon/>
+>>>>>>> Stashed changes
   </DockIcon>
 </Dock>
 
