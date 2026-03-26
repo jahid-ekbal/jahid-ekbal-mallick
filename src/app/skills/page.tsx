@@ -1,8 +1,8 @@
-import { Button } from "@/components/shadcnui/button";
 import { RetroGrid } from "@/components/shadcnui/retro-grid";
+import { ShimmerButton } from "@/components/shadcnui/shimmer-button";
 import { SparklesText } from "@/components/shadcnui/sparkles-text";
 import { WordRotate } from "@/components/shadcnui/word-rotate";
-import { ActivityIcon, FishingHookIcon } from "lucide-react";
+import { FishingHookIcon } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,13 +23,14 @@ const page = () => {
         />
       </div>
       <div className="grid grid-cols-2 place-items-center gap-4">
-        <Button>
-          <FishingHookIcon className="animate-ping" /> Visit my Github profile
-        </Button>
-        <Button>
-          <ActivityIcon className="animate-pulse" /> Explore my portfolio
-          website
-        </Button>
+        <ShimmerButton>
+          {" "}
+          <FishingHookIcon /> Visit my Github profile
+        </ShimmerButton>
+        <ShimmerButton>
+          {" "}
+          <FishingHookIcon /> Explore my portfolio website
+        </ShimmerButton>
       </div>
     </section>
   );
