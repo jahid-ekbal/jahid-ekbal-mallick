@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ThemeToggleButton from "../Buttons/ThemeToggleButton";
+import { AnimatedThemeToggler } from "../shadcnui/animated-theme-toggler";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ResponsiveToggleNav from "./ResponsiveToggleNav";
@@ -14,7 +14,7 @@ const Header = () => {
           <h1
             className="text-2xl font-semibold"
             aria-label="App Name">
-            NSF App
+            JAHID EKBAL MALLICK
           </h1>
         </Link>
 
@@ -25,7 +25,7 @@ const Header = () => {
             <DesktopNav />
           </ResponsiveToggleNav>
 
-          <ThemeToggleButton />
+          <AnimatedThemeToggler />
         </div>
       </div>
     </header>

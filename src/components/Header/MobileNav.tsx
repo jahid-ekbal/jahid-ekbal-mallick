@@ -26,7 +26,7 @@ const MobileNav = () => {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-[300px] sm:w-[400px]">
+        className="w-75 sm:w-100">
         <SheetHeader>
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <SheetDescription className="sr-only">
@@ -37,9 +37,34 @@ const MobileNav = () => {
         <nav className="flex flex-col items-center gap-4">
           <SheetClose asChild>
             <Link
-              href="/"
+              href="/home"
               className="hover:text-primary text-lg font-medium transition-colors">
               Home
+            </Link>
+            <Link
+              href="/projects"
+              className="hover:text-primary text-lg font-medium transition-colors">
+              Projects
+            </Link>
+            <Link
+              href="/skills"
+              className="hover:text-primary text-lg font-medium transition-colors">
+              Skills
+            </Link>
+            <Link
+              href="/tweet"
+              className="hover:text-primary text-lg font-medium transition-colors">
+              Tweet
+            </Link>
+            <Link
+              href="/about"
+              className="hover:text-primary text-lg font-medium transition-colors">
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className="hover:text-primary text-lg font-medium transition-colors">
+              Contact
             </Link>
           </SheetClose>
         </nav>
