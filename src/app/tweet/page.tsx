@@ -1,6 +1,3 @@
-import { RetroGrid } from "@/components/shadcnui/retro-grid";
-import TweetPaage from "@/components/TweetPaage";
-
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,10 +8,7 @@ export const metadata: Metadata = {
 const page = () => {
   return (
     <section className="grid h-[90dvh] place-items-center">
-      <RetroGrid />
-      <div className="">
-        <TweetPaage />
-      </div>
+      <div className=""></div>
     </section>
   );
 };
