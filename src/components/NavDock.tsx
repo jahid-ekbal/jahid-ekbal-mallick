@@ -1,6 +1,7 @@
-import { LayersIcon, SettingsIcon } from "lucide-react";
+import { LayersIcon } from "lucide-react";
 import AnimatedEmailButton from "./Buttons/AnimatedEmailButton";
 import GithubIcon from "./icons/GithubIcon";
+import NavSetting from "./NavSetting";
 import { AnimatedThemeToggler } from "./shadcnui/animated-theme-toggler";
 import { Dock, DockIcon } from "./shadcnui/dock";
 
@@ -28,7 +29,7 @@ const NavDock = () => {
           <AnimatedEmailButton />
         </DockIcon>
         <DockIcon>
-          <SettingsIcon />
+          <NavSetting />
         </DockIcon>
         <DockIcon>
           <AnimatedThemeToggler />
