@@ -1,4 +1,4 @@
-import { LayersIcon } from "lucide-react";
+import { HomeIcon } from "lucide-react";
 import AnimatedEmailButton from "./Buttons/AnimatedEmailButton";
 import GithubIcon from "./icons/GithubIcon";
 import NavSetting from "./NavSetting";
@@ -14,7 +14,7 @@ const NavDock = () => {
             href="/"
             target="_blank"
             rel="noopener noreferrer">
-            <LayersIcon />
+            <HomeIcon />
           </a>
         </DockIcon>
         <DockIcon>
