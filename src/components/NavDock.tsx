@@ -1,19 +1,31 @@
-import { GitPullRequestCreateIcon, HomeIcon, SettingsIcon } from "lucide-react";
-
+import { LayersIcon, SettingsIcon } from "lucide-react";
+import AnimatedEmailButton from "./Buttons/AnimatedEmailButton";
+import GithubIcon from "./icons/GithubIcon";
 import { AnimatedThemeToggler } from "./shadcnui/animated-theme-toggler";
 import { Dock, DockIcon } from "./shadcnui/dock";
+
 const NavDock = () => {
   return (
     <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
       <Dock>
         <DockIcon>
-          <HomeIcon />
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer">
+            <LayersIcon />
+          </a>
         </DockIcon>
         <DockIcon>
-          <GitPullRequestCreateIcon />
+          <a
+            href="https://github.com/jahid-ekbal"
+            target="_blank"
+            rel="noopener noreferrer">
+            <GithubIcon className="h-6 w-6" />
+          </a>
         </DockIcon>
         <DockIcon>
-          <SettingsIcon />
+          <AnimatedEmailButton />
         </DockIcon>
         <DockIcon>
           <SettingsIcon />
