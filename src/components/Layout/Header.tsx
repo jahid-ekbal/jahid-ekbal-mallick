@@ -1,8 +1,5 @@
 import Link from "next/link";
-import { AnimatedThemeToggler } from "../shadcnui/animated-theme-toggler";
-import DesktopNav from "./DesktopNav";
-import MobileNav from "./MobileNav";
-import ResponsiveToggleNav from "./ResponsiveToggleNav";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 const Header = () => {
   return (
@@ -14,19 +11,15 @@ const Header = () => {
           <h1
             className="text-2xl font-semibold"
             aria-label="App Name">
-            JAHID EKBAL MALLICK
+            NSF App
           </h1>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <ResponsiveToggleNav>
-            <MobileNav />
+        <nav className="flex items-center gap-4">
+          <Link href={"/"}>Home</Link>
 
-            <DesktopNav />
-          </ResponsiveToggleNav>
-
-          <AnimatedThemeToggler />
-        </div>
+          <ThemeToggleButton />
+        </nav>
       </div>
     </header>
   );

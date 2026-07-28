@@ -1,25 +1,26 @@
-import Header from "@/components/Header/Header";
 import ThemeProvider from "@/components/Providers/ThemeProvider";
-import { ReactNode } from "react";
+import { geistMono, geistSans, interHeading } from "@/lib/fonts";
+import { LayoutProps } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
-type RootLayoutProps = {
-  children: ReactNode;
-};
-
-const RootLayout = ({ children }: Readonly<RootLayoutProps>) => {
+const RootLayout = ({ children }: LayoutProps) => {
   return (
     <html
       lang="en"
+      className={cn(
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        interHeading.variable,
+      )}
       suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute={"class"}
           defaultTheme="dark"
           enableSystem={false}>
-          <Header />
-
-          <main className="mx-auto max-w-7xl px-6 py-3">{children}</main>
+          {children}
         </ThemeProvider>
       </body>
     </html>

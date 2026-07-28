@@ -1,8 +1,5 @@
-import { Button } from "@/components/shadcnui/button";
-import { RetroGrid } from "@/components/shadcnui/retro-grid";
-import { SparklesText } from "@/components/shadcnui/sparkles-text";
-import { WordRotate } from "@/components/shadcnui/word-rotate";
-import { ActivityIcon, FishingHookIcon } from "lucide-react";
+import Header from "@/components/Layout/Header";
+import ToastButton from "@/components/ToastButton";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,26 +9,20 @@ export const metadata: Metadata = {
 
 const page = () => {
   return (
-    <section className="grid h-[90dvh] place-items-center">
-      <RetroGrid />
+    <>
+      <Header />
 
-      <div className="grid place-items-center gap-4 text-center">
-        <SparklesText>JAHID EKBAL MALLICK</SparklesText>
-        <WordRotate
-          words={["Fullstack Developer", "UI/UX Designer"]}
-          className="text-5xl"
-        />
-      </div>
-      <div className="grid grid-cols-2 place-items-center gap-4">
-        <Button>
-          <FishingHookIcon className="animate-ping" /> Visit my Github profile
-        </Button>
-        <Button>
-          <ActivityIcon className="animate-pulse" /> Explore my portfolio
-          website
-        </Button>
-      </div>
-    </section>
+      <main className="grid h-dvh place-items-center">
+        <section className="space-y-4 text-center">
+          <h1 className="text-5xl font-semibold">Next.js Starter Fullstack</h1>
+          <h2 className="text-3xl">
+            Production grade Fullstack Next.js starter template
+          </h2>
+
+          <ToastButton />
+        </section>
+      </main>
+    </>
   );
 };
 
