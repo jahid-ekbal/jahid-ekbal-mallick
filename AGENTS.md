@@ -139,8 +139,9 @@ No commands, no gateway, no webhook. The bot only SENDS: contact-form submission
 - Better Auth 1.7 + `@better-auth/prisma-adapter` over the existing libsql-backed Prisma client. Instance: `src/lib/auth.ts` (`nextCookies()` last plugin); client: `src/lib/auth-client.ts`; mounted at `/api/auth/[...all]`.
 - Better Auth 1.7 REQUIRES an `issuer` column on Account (`local:credential` for passwords). The CLI schema generator missed it - it was added manually; keep it if regenerating.
 - Login at `/login` (client form -> `authClient.signIn.email`). Dashboard at `/admin/*`, never linked publicly, `noindex`, disallowed in robots.
-- Route protection layers: `src/proxy.ts` (Next 16 renamed middleware->proxy) does cookie-presence-only optimistic redirect via `getSessionCookie`; authoritative check is `auth.api.getSession({headers})` in `src/app/admin/layout.tsx` AND at the top of every server action in `src/server/actions/admin/*` (guard helper `requireAdminSession()`).
-- Seed creates the admin via `auth.api.signUpEmail`; credentials come from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, falling back to built-in defaults `admin@example.com`/`admin@example.com` when unset (seed warns loudly when defaulting, especially against remote `libsql://`). Admin creation is skipped if the email already exists (idempotent re-seeds).
+- Route protection layers: `src/proxy.ts` (Next 16 renamed middleware->proxy) does cookie-presence-only optimistic redirect for `/admin/*` ONLY (matcher `/admin/:path*`; deliberately NO `/login` rule - cookie presence ≠ validity and caused login↔admin loops with stale cookies). Authoritative checks: login PAGE redirects valid sessions to `/admin` via `auth.api.getSession({headers})`, `src/app/admin/layout.tsx` guards all `/admin/*`, and every server action in `src/server/actions/admin/*` starts with the guard helper `requireAdminSession()`.
+- Migrations: history squashed to a single baseline `20260826181414_init`. Turso/remote DBs provisioned from the OLD 6-migration history need a one-time drop+recreate (or clearing `_prisma_migrations`) before `db:deploy`. `bun run db:reset` wipes local data non-interactively (`prisma migrate reset --force`).
+- Seed creates the admin via `auth.api.signUpEmail`; credentials come from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, falling back to built-in defaults `admin@example.com`/`admin@example.com` when unset (seed warns loudly when defaulting, especially against remote `libsql://`). If the account exists but its hash does NOT match ADMIN_PASSWORD, the seeder probes with `auth.api.signInEmail`, deletes the user row (cascades Account/Session), and recreates it - `.env` always wins on re-seed. Throwaway sessions opened by these server-side auth calls are deleted so seeding leaves zero dangling sessions.
 - Public pages live under route group `src/app/(site)/` (Header/Footer chrome); root layout only has html/body/ThemeProvider/AnalyticsTracker so admin+login render clean.
 - typedRoutes is on: literal routes must exist after `next typegen`; dynamic/query-string URLs need `as Route` casts.
 
@@ -151,6 +152,15 @@ No commands, no gateway, no webhook. The bot only SENDS: contact-form submission
 - Country: visitor IP (x-forwarded-for) resolved via ipwho.is then ip-api fallback, cached per-IP in `IpGeoCache`; loopback/private IPs store "Local".
 - Retention: sessions older than 90 days pruned probabilistically (~5% of collects).
 - Dashboard `/admin/analytics` (?range=7d|30d|90d): stat cards, daily bar chart (CSS bars, no chart lib runtime needed beyond recharts install), top countries/pages/referrers/devices tables, recent sessions with time spent.
+
+## Security posture
+
+- Security headers + CSP are centralized in `next.config.ts` (`headers()`): strict CSP (`default-src 'self'`, no frames/object), HSTS, XCTO, XFO DENY, Referrer-Policy, Permissions-Policy, `X-XSS-Protection: 0`. CSP keeps `'unsafe-inline'` for scripts/styles because Next ships inline bootstrap scripts/React inline styles and there is no nonce infrastructure at proxy level; `img-src https:` exists because admin-entered cover images point at arbitrary hosts. `poweredByHeader: false`; `serverActions.bodySizeLimit: "512kb"`.
+- Rate limiting layers: Better Auth core `{enabled:true, window:60, max:30}` in-memory plus its built-in special rule `POST /sign-in/email` = 3 req/10s (verified: burst returns 401,401,401,429…). App-level limiter `src/lib/rateLimit.ts` (fixed-window Map with GC sweep) guards contact action (5 msg/10min/IP) and analytics collect (30 pageviews & 60 dwell/min/IP; verified 429 tail). In-memory is correct for the single Render instance - if ever multi-instance, switch auth rateLimit storage to database.
+- `clientIpFromHeaders()` returns the RIGHTMOST `x-forwarded-for` token (appending proxies like Render add the true peer at the END; leftmost is client-spoofable). Matches Better Auth's own walk direction - do not "optimize" back to `[0]`.
+- Analytics collector hardening: 2KB body cap (413), JSON-parse guard, dwell has a 86,400s lifetime ceiling enforced in the updateMany WHERE, visitor/session cookies are `httpOnly` + `secure` in production.
+- XSS surface: blog/project markdown renders through `react-markdown` (raw HTML stripped by default) under the CSP above; admin inputs are zod-capped server-side even though forms validate client-side too. GitHub import fetches only `api.github.com` paths built from `[\w.-]+` capture groups (no SSRF).
+- Health endpoint stays dependency-free by design (deploy gate must never fail on DB blips).
 
 ## Git commits
 

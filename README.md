@@ -152,6 +152,9 @@ rollback on failure.
    DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
    DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
    ```
+   Migration history is a single squashed baseline (`init`). If your Turso
+   database still carries the pre-squash six-migration history, drop and
+   recreate it once (or clear `_prisma_migrations`) before this step.
 3. **Create the service on Render** via the Blueprint ("New +" -> "Blueprint"
    -> this repo), or wire the official Render MCP server (`.vscode/mcp.json`)
    into your agent and have it apply the spec. Fill in the prompted variables:
@@ -167,10 +170,11 @@ rollback on failure.
    over the network on every request, so this is the largest latency win. Use
    the Starter instance type or above: Free instances sleep when idle (cold
    starts on public pages) and don't support pre-deploy commands.
-5. **Admin dashboard**: sign in at `https://<your-domain>/login` with the
-   seeded admin credentials to manage projects, posts, profile and messages.
-   The dashboard is never linked from public pages and is excluded from
-   robots/sitemaps.
+5. **Admin dashboard**: sign in at `https://<your-domain>/login`. Defaults are
+   `admin@example.com` / `admin@example.com` when `ADMIN_EMAIL` /
+   `ADMIN_PASSWORD` were not set before seeding - change them for anything
+   public. The dashboard is never linked from public pages and is excluded
+   from robots/sitemaps.
 6. **Ongoing deploys**: every push to `main` rebuilds and redeploys
    automatically. Migrations run in the pre-deploy command before the new
    instance accepts traffic - no manual `db:deploy` per release. A failed
@@ -184,6 +188,18 @@ coding agents create services, update env vars, trigger deploys (optionally
 clearing the build cache), and inspect logs/metrics without leaving chat.
 Generate the key under Account Settings -> API Keys; VS Code stores it in
 secret storage, not in this repo.
+
+## 🔒 Security
+
+Defense-in-depth out of the box:
+
+- **Headers**: strict Content-Security-Policy, HSTS, `X-Frame-Options: DENY`, nosniff, locked-down Permissions-Policy; `X-Powered-By` removed.
+- **Brute force**: Better Auth rate limiting (login capped at 3 attempts / 10 s per IP; broader auth budget 30/min), verified returning `429` under burst.
+- **Abuse caps**: contact form limited to 5 messages / IP / 10 min; analytics collector capped at 30 pageviews + 60 heartbeats / min / IP with 2 KB payload limits - both return honest `429`s instead of burning your Turso quota.
+- **Authored safety**: all admin mutations re-check sessions server-side (`requireAdminSession`), all input passes zod schemas regardless of client validation, markdown is rendered HTML-stripped, and Server Action bodies are capped at 512 KB.
+- **Cookie hygiene**: first-party analytics cookies are `HttpOnly` + `Secure` in production; session cookies follow Better Auth secure defaults.
+
+Rotating credentials after any secret exposure (e.g. regenerating the Discord bot token in the Developer Portal) remains your operational responsibility.
 
 ## 🔌 Integrations
 

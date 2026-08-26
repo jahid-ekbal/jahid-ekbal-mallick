@@ -155,9 +155,40 @@ async function main(): Promise<void> {
     where: { email: adminEmail },
   });
 
-  let adminStatus: "created" | "already existed";
+  let adminStatus: string;
   if (existing) {
-    adminStatus = "already existed";
+    // The stored scrypt hash may predate the current ADMIN_PASSWORD (older
+    // seeds skipped existing users, so later .env changes never applied).
+    // Probe with the configured credentials and recreate the account when
+    // they do not match, making .env the source of truth on every seed.
+    const verified = await auth.api
+      .signInEmail({
+        body: { email: adminEmail, password: adminPassword },
+      })
+      .then(() => true, () => false);
+
+    if (verified) {
+      adminStatus = "verified against ADMIN_PASSWORD";
+    } else {
+      console.warn(
+        `Admin account (${adminEmail}) exists but does not match ` +
+          "ADMIN_PASSWORD - recreating it with the configured credentials.",
+      );
+      // Deleting the user cascades its Account + Session rows
+      // (schema defines onDelete: Cascade).
+      await prisma.user.delete({ where: { id: existing.id } });
+      const result = await auth.api.signUpEmail({
+        body: {
+          email: adminEmail,
+          password: adminPassword,
+          name: "Admin",
+        },
+      });
+      if (!result?.user?.id) {
+        throw new Error("Admin user recreation failed");
+      }
+      adminStatus = "recreated with configured credentials";
+    }
   } else {
     const result = await auth.api.signUpEmail({
       body: {
@@ -172,13 +203,29 @@ async function main(): Promise<void> {
     adminStatus = "created";
   }
 
+  // Server-side auth API calls open real session rows (the probe above
+  // included) that no browser will ever present. Remove them so seeding
+  // leaves zero dangling sessions.
+  const seededAdmin = await prisma.user.findFirst({
+    where: { email: adminEmail },
+    select: { id: true },
+  });
+  let cleanedSessions = 0;
+  if (seededAdmin) {
+    const removed = await prisma.session.deleteMany({
+      where: { userId: seededAdmin.id },
+    });
+    cleanedSessions = removed.count;
+  }
+
   const [profiles, projects] = await Promise.all([
     prisma.profile.count(),
     prisma.project.count(),
   ]);
   console.log(
     `Seed complete: ${profiles} profile, ${projects} projects, admin ` +
-      `account ${adminStatus}.`,
+      `account ${adminStatus}.` +
+      (cleanedSessions > 0 ? ` Cleaned ${cleanedSessions} seed session(s).` : ""),
   );
 }
 

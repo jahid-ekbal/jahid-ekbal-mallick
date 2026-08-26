@@ -1,6 +1,9 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
+import { auth } from "@/lib/auth";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const metadata: Metadata = {
@@ -8,7 +11,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
+// Authoritative sign-in state check: unlike the old proxy-level
+// cookie-presence redirect, a VALID session is required before bouncing to
+// /admin - stale/expired cookies fall through and simply render the form
+// again, so a login <-> admin redirect loop is impossible.
+export default async function LoginPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session) {
+    redirect("/admin");
+  }
+
   return (
     <main className="bg-background text-foreground flex min-h-svh items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
