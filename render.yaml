@@ -1,0 +1,50 @@
+# Render Blueprint for jahid-ekbal-mallick (Next.js 16 + Prisma 7/Turso)
+# Reference: https://docs.render.com/blueprint-spec
+#
+# One-time provisioning:
+#   1. Commit this file, then in the Render Dashboard choose "New +" ->
+#      "Blueprint" and select this repo (or create the service through the
+#      Render MCP server / CLI -- the spec below applies unchanged).
+#   2. When prompted, fill in each `sync: false` variable (secrets stay out of
+#      git entirely; `generateValue` makes Render mint BETTER_AUTH_SECRET).
+#   3. Seed the fresh Turso database once from your machine:
+#        DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
+#        DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
+#   After that, every push to main builds, migrates (pre-deploy), passes the
+#   /api/health check, then serves -- zero-downtime with rollback on failure.
+
+services:
+  - type: web
+    name: jahid-ekbal-mallick
+    runtime: node
+    plan: starter # warm instance: no free-tier cold starts, unlocks preDeployCommand
+    region: oregon # MUST match your Turso database location for low query latency
+    branch: main
+    autoDeploy: true
+    buildCommand: bun install && bun run build # = prisma generate && next build
+    preDeployCommand: bunx prisma migrate deploy
+    startCommand: bun run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL # libsql://<your-db>.turso.io
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL # e.g. https://jahid-ekbal-mallick.onrender.com
+        sync: false
+      - key: BETTER_AUTH_URL # same origin as NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET # Render generates a base64 256-bit secret
+        generateValue: true
+      - key: DISCORD_BOT_TOKEN # optional trio; site degrades gracefully
+        sync: false
+      - key: DISCORD_OWNER_USER_ID
+        sync: false
+      - key: DISCORD_LOG_CHANNEL_ID
+        sync: false
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: CHECKPOINT_DISABLE
+        value: "1"

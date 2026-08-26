@@ -66,7 +66,7 @@ at `/login` - neither page is linked anywhere public.
 | Layer     | Technology                                      |
 | --------- | ----------------------------------------------- |
 | Framework | Next.js 16 (App Router)                         |
-| Language  | TypeScript 6 (strict)                           |
+| Language  | TypeScript 5.9 (strict)                         |
 | UI        | React 19, Tailwind CSS 4, shadcn/ui (base-vega) |
 | Forms     | react-hook-form + Zod 4 + @hookform/resolvers   |
 | Database  | SQLite via Prisma 7 + libSQL adapter            |
@@ -107,10 +107,10 @@ bun run build              # production build check
 bun prod                   # full local production server
 ```
 
-### Vercel production (one-time setup)
+### Render production (one-time setup)
 
 ```sh
-# 1. Create the Turso database
+# 1. Create the Turso database (same region as your Render service!)
 turso db create portfolio
 turso db show portfolio --url        # -> DATABASE_URL (libsql://...)
 turso db tokens create portfolio     # -> TURSO_AUTH_TOKEN
@@ -119,20 +119,25 @@ turso db tokens create portfolio     # -> TURSO_AUTH_TOKEN
 DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
 DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
 
-# 3. Deploy (Vercel builds automatically on push)
-git push
-# or with the CLI:
-vercel --prod
+# 3. Provision the web service from the committed Blueprint
+#    Render Dashboard -> "New +" -> "Blueprint" -> select this repo
+#    (or apply the same render.yaml spec via the Render CLI / MCP server)
 ```
 
 Full environment-variable list and the Discord webhook flip are described in
-[Deploying to Vercel](#-deploying-to-vercel) below.
+[Deploying to Render](#-deploying-to-render) below.
 
-## 🚀 Deploying to Vercel
+## 🚀 Deploying to Render
 
-Local SQLite files do not persist on serverless, so production uses
+Local SQLite files do not persist across instances, so production uses
 [Turso](https://turso.tech) through the same `@prisma/adapter-libsql`
 adapter. No code changes are needed; only environment variables differ.
+
+The repo ships a Blueprint ([render.yaml](render.yaml)) that defines the web
+service as code: Node runtime with Bun, `bun install && bun run build`,
+`prisma migrate deploy` as a pre-deploy command, `bun run start`, and a
+`/api/health` liveness probe enabling zero-downtime deploys with automatic
+rollback on failure.
 
 1. **Create the database**
    ```sh
@@ -145,22 +150,38 @@ adapter. No code changes are needed; only environment variables differ.
    DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
    DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
    ```
-3. **Import the repo on Vercel** and set environment variables:
+3. **Create the service on Render** via the Blueprint ("New +" -> "Blueprint"
+   -> this repo), or wire the official Render MCP server (`.vscode/mcp.json`)
+   into your agent and have it apply the spec. Fill in the prompted variables:
    - `DATABASE_URL` = your `libsql://...` URL
    - `TURSO_AUTH_TOKEN` = the token from step 1
    - `NEXT_PUBLIC_SITE_URL` = `https://<your-domain>` (canonical/OG/sitemap)
-   - `BETTER_AUTH_SECRET` = 32+ char secret (login sessions)
-   - `BETTER_AUTH_URL` = `https://<your-domain>`
-   - the three `DISCORD_*` vars from `.env.example` (optional; send-only DMs)
-4. **Admin dashboard**: sign in at `https://<your-domain>/login` with the
+   - `BETTER_AUTH_URL` = same origin as `NEXT_PUBLIC_SITE_URL`
+   - `BETTER_AUTH_SECRET` is minted automatically by Render
+     (`generateValue: true`); the three `DISCORD_*` vars are optional
+     (send-only contact-form DMs).
+4. **Co-locate the region**: pick the Render region closest to (ideally the
+   same as) your Turso database location - server-rendered pages query libSQL
+   over the network on every request, so this is the largest latency win. Use
+   the Starter instance type or above: Free instances sleep when idle (cold
+   starts on public pages) and don't support pre-deploy commands.
+5. **Admin dashboard**: sign in at `https://<your-domain>/login` with the
    seeded admin credentials to manage projects, posts, profile and messages.
    The dashboard is never linked from public pages and is excluded from
    robots/sitemaps.
-5. **Ongoing deploys**: every `git push` to the production branch rebuilds and
-   redeploys automatically (`prisma generate && next build` runs in the Vercel
-   build). After adding new migrations locally, run `bun run deploy`, which
-   lints, builds, applies migrations + seeds against Turso, then commits and
-   pushes in one step.
+6. **Ongoing deploys**: every push to `main` rebuilds and redeploys
+   automatically. Migrations run in the pre-deploy command before the new
+   instance accepts traffic - no manual `db:deploy` per release. A failed
+   health check cancels the rollout and keeps the previous version live.
+
+### Managing Render from the editor
+
+[.vscode/mcp.json](.vscode/mcp.json) registers the official Render MCP server
+(`https://mcp.render.com/mcp`, Bearer API-key auth). Once enabled it lets
+coding agents create services, update env vars, trigger deploys (optionally
+clearing the build cache), and inspect logs/metrics without leaving chat.
+Generate the key under Account Settings -> API Keys; VS Code stores it in
+secret storage, not in this repo.
 
 ## 🔌 Integrations
 

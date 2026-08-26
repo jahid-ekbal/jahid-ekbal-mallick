@@ -1,0 +1,28 @@
+{
+  // Render MCP server (official): manage services/env vars/deploys/logs from
+  // coding agents. Reference: https://docs.render.com/mcp-server
+  //
+  // To activate: set your Render API key when VS Code prompts (stored in VS
+  // Code SecretStorage, never written to disk in this repo). Account Settings
+  // -> API Keys -> "Create API Key".
+  "servers": {
+    "render": {
+      "type": "http",
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${input:renderApiKey}"
+      },
+      // Performance: reuse connections between tool calls instead of cold
+      // starting the stream per request (notable speed-up on remote MCPs).
+      "alwaysAllow": []
+    }
+  },
+  "inputs": [
+    {
+      "id": "renderApiKey",
+      "type": "promptString",
+      "description": "Render API key (Dashboard > Account Settings > API Keys)",
+      "password": true
+    }
+  ]
+}

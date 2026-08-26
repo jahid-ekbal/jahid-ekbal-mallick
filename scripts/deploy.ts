@@ -31,7 +31,7 @@ run(
 );
 run(["bun", "prisma/seed.ts"], "Seeding remote database");
 
-console.log("\n==> Committing and pushing (triggers Vercel auto-deploy)");
+console.log("\n==> Committing and pushing (triggers Render auto-deploy)");
 
 const status = spawnSync("git", ["status", "--porcelain"], {
   cwd: root,
@@ -63,8 +63,10 @@ run(["git", "push"], "Pushing to origin");
 
 console.log(`
 Deploy pipeline finished.
-  - Vercel will build and serve the pushed commit automatically.
-  - Verify Vercel env vars: DATABASE_URL, TURSO_AUTH_TOKEN, BETTER_AUTH_SECRET,
-    NEXT_PUBLIC_SITE_URL, DISCORD_BOT_TOKEN, DISCORD_OWNER_USER_ID,
-    DISCORD_LOG_CHANNEL_ID (optional).
+  - Render will build and serve the pushed commit automatically (see
+    render.yaml; migrations also run via the pre-deploy command on release).
+  - Verify Render env vars: DATABASE_URL, TURSO_AUTH_TOKEN,
+    BETTER_AUTH_SECRET, BETTER_AUTH_URL, NEXT_PUBLIC_SITE_URL,
+    DISCORD_BOT_TOKEN, DISCORD_OWNER_USER_ID, DISCORD_LOG_CHANNEL_ID
+    (optional).
 `);

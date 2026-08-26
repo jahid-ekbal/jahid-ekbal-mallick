@@ -9,7 +9,7 @@ export const site = {
     "Full-stack engineer building fast, accessible web apps end to end with React, Next.js, and TypeScript, backed by UI/UX and motion design.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://jahid-ekbal-mallick.vercel.app",
+    "https://jahid-ekbal-mallick.onrender.com",
 } as const;
 
 export const navItems = [

@@ -13,7 +13,7 @@ This version has breaking changes - APIs, conventions, and file structure may al
 | Next.js       | ^16.2              | `reactCompiler: true`, `typedRoutes: true`                                                                                                                                                                                                                                                                                         |
 | React         | ^19.2              |                                                                                                                                                                                                                                                                                                                                    |
 | TypeScript    | ^5.9               | strict, ESNext module, bundler resolution                                                                                                                                                                                                                                                                                          |
-| Prisma        | ^7.9               | Uses `prisma-client` generator (not `prisma-client-js`). Output: `generated/prisma`. Driver adapter: `@prisma/adapter-libsql` for SQLite. Config: `prisma.config.ts`. DATABASE_URL accepts `file:./` (dev) or `libsql://` (Turso prod, needs TURSO_AUTH_TOKEN; wired in dbClient + seed). Prod setup: README "Deploying to Vercel" |
+| Prisma        | ^7.9               | Uses `prisma-client` generator (not `prisma-client-js`). Output: `generated/prisma`. Driver adapter: `@prisma/adapter-libsql` for SQLite. Config: `prisma.config.ts`. DATABASE_URL accepts `file:./` (dev) or `libsql://` (Turso prod, needs TURSO_AUTH_TOKEN; wired in dbClient + seed). Prod setup: README "Deploying to Render" |
 | shadcn/ui     | base-vega style    | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`                                                                                                                                                                                                                                                       |
 | Base UI React | ^1.6               | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)                                                                                                                                                                                                                                                           |
 | Tailwind CSS  | ^4.3               | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`                                                                                                                                                                                                                                                             |
@@ -40,10 +40,10 @@ Development:
 
 - `bun install`; copy `.env.example` to `.env` (DISCORD_* optional locally)
 - `bun run migrate` after schema edits; `bun run db:seed` upserts profile data
-- `bun run dev` = Next dev + Discord gateway sidecar via concurrently; `bun run dev:web` skips the bot
-- `bun studio` = Prisma Studio; `bun discord:register` republishes global slash commands
+- `bun run dev` = plain Next dev (bot is send-only REST; no sidecar process); `bun run dev:web` is an alias
+- `bun studio` = Prisma Studio
 
-Deploy (Turso + Vercel), one-time:
+Deploy (Turso + Render), one-time:
 
 ```sh
 turso db create portfolio
@@ -53,9 +53,12 @@ DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
 DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
 ```
 
-- Vercel env vars: DATABASE_URL, TURSO_AUTH_TOKEN, NEXT_PUBLIC_SITE_URL, five DISCORD_*
-- After first deploy paste `https://<domain>/api/discord/interactions` into the Dev Portal Interactions Endpoint URL (gateway/webhook delivery is mutually exclusive)
-- Every push to prod branch auto-deploys; run `db:deploy` against Turso once per new migration
+- Provision via the committed Blueprint (`render.yaml`): Dashboard -> New + -> Blueprint -> pick this repo (or apply through the Render MCP server / CLI - `.vscode/mcp.json` configures it)
+- Render env vars: DATABASE_URL, TURSO_AUTH_TOKEN, NEXT_PUBLIC_SITE_URL, BETTER_AUTH_URL, BETTER_AUTH_SECRET (generateValue in Blueprint), three optional DISCORD_*
+- Keep the Render region matched to the Turso DB location (every SSR request queries libSQL over the network)
+- Use Starter plan or above: Free instances sleep on idle (cold starts) and don't support preDeployCommand
+- Every push to main auto-deploys; `preDeployCommand: bunx prisma migrate deploy` runs migrations before the new instance takes traffic
+- `/api/health` is the liveness probe - keep it dependency-free (no DB touch) so DB blips can't fail deploys/false-positive rollbacks
 
 ## Project structure
 
@@ -125,7 +128,7 @@ No commands, no gateway, no webhook. The bot only SENDS: contact-form submission
 
 - Kept: `src/server/discord/{env,rest,notify,types}.ts`. Deleted: all handlers/router/commands/verify/blogService, gateway sidecar, register script, `/api/discord/interactions` route.
 - Env shrunk to `DISCORD_BOT_TOKEN`, `DISCORD_OWNER_USER_ID`, `DISCORD_LOG_CHANNEL_ID` (all optional).
-- Contact DM delivery still uses `after()` from `next/server` on Vercel.
+- Contact DM delivery still uses `after()` from `next/server` (Node runtime; works unchanged on Render).
 - GitHub repo import moved out of Discord: `src/server/github/repoImport.ts` (`importProjectFromGitHub`), used by the admin projects page. Unauthenticated GitHub API = 60 req/hr; no token by design.
 - SQLite can't autoincrement non-id columns: `Post.seq` is allocated via `_max.seq + 1` in `src/server/actions/admin/posts.ts`.
 - Optional secrets in `serverEnv.ts` use a zod `preprocess` that maps empty strings to `undefined`.
