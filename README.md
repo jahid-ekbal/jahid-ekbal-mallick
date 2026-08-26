@@ -58,8 +58,10 @@ bun run dev            # http://localhost:3000
 `BETTER_AUTH_SECRET` + placeholder admin credentials if missing), applies
 migrations, generates the Prisma client and seeds the database. Set
 `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first seed to control
-the dashboard login. The admin dashboard lives at `/admin`; sign in manually
-at `/login` - neither page is linked anywhere public.
+the dashboard login - if they are unset, the seeder falls back to the
+built-in defaults `admin@example.com` / `admin@example.com`. The admin
+dashboard lives at `/admin`; sign in manually at `/login` - neither page is
+linked anywhere public.
 
 ## 📦 Tech Stack
 

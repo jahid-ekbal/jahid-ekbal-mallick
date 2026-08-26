@@ -140,7 +140,7 @@ No commands, no gateway, no webhook. The bot only SENDS: contact-form submission
 - Better Auth 1.7 REQUIRES an `issuer` column on Account (`local:credential` for passwords). The CLI schema generator missed it - it was added manually; keep it if regenerating.
 - Login at `/login` (client form -> `authClient.signIn.email`). Dashboard at `/admin/*`, never linked publicly, `noindex`, disallowed in robots.
 - Route protection layers: `src/proxy.ts` (Next 16 renamed middleware->proxy) does cookie-presence-only optimistic redirect via `getSessionCookie`; authoritative check is `auth.api.getSession({headers})` in `src/app/admin/layout.tsx` AND at the top of every server action in `src/server/actions/admin/*` (guard helper `requireAdminSession()`).
-- Seed creates the admin via `auth.api.signUpEmail` using `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars (only when the email doesn't exist yet).
+- Seed creates the admin via `auth.api.signUpEmail`; credentials come from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, falling back to built-in defaults `admin@example.com`/`admin@example.com` when unset (seed warns loudly when defaulting, especially against remote `libsql://`). Admin creation is skipped if the email already exists (idempotent re-seeds).
 - Public pages live under route group `src/app/(site)/` (Header/Footer chrome); root layout only has html/body/ThemeProvider/AnalyticsTracker so admin+login render clean.
 - typedRoutes is on: literal routes must exist after `next typegen`; dynamic/query-string URLs need `as Route` casts.
 

@@ -26,18 +26,35 @@ if (!existsSync(envPath)) {
   copyFileSync(path.join(root, ".env.example"), envPath);
   console.log("\nCreated .env from .env.example");
 
-  let contents = readFileSync(envPath, "utf8");
-  const secret = randomBytes(32).toString("base64");
+  const contents = readFileSync(envPath, "utf8");
+  // Append each entry independently. Credentials mirror the built-in seed
+  // fallbacks in prisma/seed.ts (admin@example.com for both).
+  const additions: string[] = [];
   if (!/^BETTER_AUTH_SECRET=/m.test(contents)) {
-    contents += `\nBETTER_AUTH_SECRET=${secret}\n`;
-    contents += "ADMIN_EMAIL=admin@example.com\n";
-    contents += "ADMIN_PASSWORD=ChangeMe-Please-123!\n";
-    writeEnv(envPath, contents);
+    additions.push(`BETTER_AUTH_SECRET=${randomBytes(32).toString("base64")}`);
+  }
+  if (!/^ADMIN_EMAIL=/m.test(contents)) {
+    additions.push("ADMIN_EMAIL=admin@example.com");
+  }
+  if (!/^ADMIN_PASSWORD=/m.test(contents)) {
+    additions.push("ADMIN_PASSWORD=admin@example.com");
+  }
+  const updated =
+    contents.replace(/\n*$/, "") +
+    (additions.length > 0 ? `\n${additions.join("\n")}\n` : "\n");
+  writeFileSync(envPath, updated);
+
+  if (additions.length > 0) {
     console.log(
-      "Generated BETTER_AUTH_SECRET and placeholder admin credentials into .env",
+      [
+        "Generated missing .env entries:",
+        ...additions.map((line) =>
+          line.startsWith("BETTER_AUTH_SECRET=")
+            ? "BETTER_AUTH_SECRET=<generated>"
+            : line,
+        ),
+      ].join("\n"),
     );
-  } else {
-    writeEnv(envPath, contents);
   }
 } else {
   console.log(".env already exists - leaving it untouched");
@@ -51,12 +68,9 @@ console.log(`
 Setup complete.
 
 Next steps:
-  1. Review .env (set ADMIN_EMAIL / ADMIN_PASSWORD before first seed if you
-     want different credentials; delete the seeded admin user to re-seed).
+  1. Review .env - dashboard login defaults to
+     admin@example.com / admin@example.com until you change ADMIN_EMAIL /
+     ADMIN_PASSWORD (delete the seeded admin user to re-seed).
   2. bun run dev      -> http://localhost:3000
   3. Admin dashboard: http://localhost:3000/admin (login at /login)
 `);
-
-function writeEnv(filePath: string, contents: string): void {
-  writeFileSync(filePath, contents);
-}

@@ -3,14 +3,31 @@ import { PrismaClient } from "@generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 import { auth } from "../src/lib/auth";
+import { serverEnv } from "../src/lib/env/serverEnv";
 
-const adapter = new PrismaLibSql({
-  url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
-  ...(process.env.TURSO_AUTH_TOKEN ?
-    { authToken: process.env.TURSO_AUTH_TOKEN }
-  : {}),
+/**
+ * Fallback admin credentials used when ADMIN_EMAIL / ADMIN_PASSWORD are not
+ * configured. They guarantee `bun run db:seed` always leaves the site with a
+ * working /login account. For anything reachable by other people, override
+ * BOTH values in the host environment before seeding (or rotate the password
+ * right after the first sign-in).
+ */
+const DEFAULT_ADMIN_EMAIL = "admin@example.com";
+const DEFAULT_ADMIN_PASSWORD = "admin@example.com";
+
+/** Remote databases get louder warnings when running on default creds. */
+const isRemoteDatabase = serverEnv.DATABASE_URL.startsWith("libsql://");
+
+// Same adapter source-of-truth as src/lib/dbClient/prisma.ts: the validated
+// serverEnv fails fast with a clear error if DATABASE_URL is missing/malformed.
+const prisma = new PrismaClient({
+  adapter: new PrismaLibSql({
+    url: serverEnv.DATABASE_URL,
+    ...(serverEnv.TURSO_AUTH_TOKEN ?
+      { authToken: serverEnv.TURSO_AUTH_TOKEN }
+    : {}),
+  }),
 });
-const prisma = new PrismaClient({ adapter });
 
 const profile = {
   id: "main",
@@ -95,34 +112,64 @@ const profile = {
   ]),
 };
 
-async function main() {
+async function main(): Promise<void> {
+  // -------------------------------------------------------------------------
+  // Profile: idempotent single-row upsert (id = "main").
+  // -------------------------------------------------------------------------
+  console.log('Seeding profile (id="main")...');
   await prisma.profile.upsert({
     where: { id: "main" },
     update: profile,
     create: profile,
   });
 
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  let adminCreated = false;
+  // -------------------------------------------------------------------------
+  // Admin account: ADMIN_EMAIL / ADMIN_PASSWORD win; documented defaults are
+  // the fallback so /login always works after a seed. Skips gracefully when
+  // the account already exists, keeping re-seeds idempotent.
+  // -------------------------------------------------------------------------
+  // Blank-string values in .env (e.g. ADMIN_EMAIL= copied from
+  // .env.example) are treated exactly like missing ones.
+  const envEmail = process.env.ADMIN_EMAIL?.trim();
+  const envPassword = process.env.ADMIN_PASSWORD;
+  const usingDefaults = !envEmail || !envPassword;
+  const adminEmail = (envEmail || DEFAULT_ADMIN_EMAIL).toLowerCase();
+  const adminPassword = envPassword || DEFAULT_ADMIN_PASSWORD;
 
-  if (adminEmail && adminPassword) {
-    const existing = await prisma.user.findFirst({
-      where: { email: adminEmail },
+  if (usingDefaults) {
+    console.warn(
+      `ADMIN_EMAIL/ADMIN_PASSWORD not fully set - falling back to built-in ` +
+        `defaults (${adminEmail}). Override both for real deployments.`,
+    );
+  }
+  if (usingDefaults && isRemoteDatabase) {
+    console.warn(
+      "Targeting a REMOTE database (libsql://) with default admin " +
+        "credentials. Set ADMIN_PASSWORD on the host environment before " +
+        "/login can be reached by others.",
+    );
+  }
+
+  console.log(`Ensuring admin account (${adminEmail})...`);
+  const existing = await prisma.user.findFirst({
+    where: { email: adminEmail },
+  });
+
+  let adminStatus: "created" | "already existed";
+  if (existing) {
+    adminStatus = "already existed";
+  } else {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email: adminEmail,
+        password: adminPassword,
+        name: "Admin",
+      },
     });
-    if (!existing) {
-      const result = await auth.api.signUpEmail({
-        body: {
-          email: adminEmail,
-          password: adminPassword,
-          name: "Admin",
-        },
-      });
-      adminCreated = result?.user?.id !== undefined;
-      if (!adminCreated) {
-        throw new Error("Admin user creation failed");
-      }
+    if (!result?.user?.id) {
+      throw new Error("Admin user creation failed");
     }
+    adminStatus = "created";
   }
 
   const [profiles, projects] = await Promise.all([
@@ -130,14 +177,16 @@ async function main() {
     prisma.project.count(),
   ]);
   console.log(
-    `Seed complete: ${profiles} profile, ${projects} projects.` +
-      (adminCreated ? " Admin user created." : ""),
+    `Seed complete: ${profiles} profile, ${projects} projects, admin ` +
+      `account ${adminStatus}.`,
   );
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+try {
+  await main();
+} catch (error) {
+  console.error("\nSeed failed:", error);
+  process.exitCode = 1;
+} finally {
+  await prisma.$disconnect();
+}
