@@ -24,6 +24,7 @@ const Experience = async () => {
           {profile && (
             <Button
               variant={"outline"}
+              nativeButton={false}
               render={<Link href={"/resume"} />}>
               View résumé
               <FileDown

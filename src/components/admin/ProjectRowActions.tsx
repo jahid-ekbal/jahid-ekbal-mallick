@@ -95,6 +95,7 @@ export function ProjectRowActions({
       <Button
         size="xs"
         variant="outline"
+        nativeButton={false}
         render={<Link href={`/admin/projects/${id}` as Route} />}>
         Edit
         <Pencil

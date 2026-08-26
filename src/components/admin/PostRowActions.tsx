@@ -92,6 +92,7 @@ export function PostRowActions({
       <Button
         size="xs"
         variant="outline"
+        nativeButton={false}
         render={<Link href={`/admin/posts/${id}` as Route} />}>
         Edit
         <Pencil

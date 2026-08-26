@@ -76,6 +76,7 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
           <div className="mt-6 flex flex-wrap gap-3">
             {project.liveUrl && (
               <Button
+                nativeButton={false}
                 render={
                   <a
                     href={project.liveUrl}
@@ -93,6 +94,7 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
             {project.repoUrl && (
               <Button
                 variant={"outline"}
+                nativeButton={false}
                 render={
                   <a
                     href={project.repoUrl}

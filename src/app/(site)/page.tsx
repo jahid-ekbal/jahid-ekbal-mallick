@@ -66,7 +66,9 @@ const Home = async () => {
         )}
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button render={<Link href={"/projects"} />}>
+          <Button
+            nativeButton={false}
+            render={<Link href={"/projects"} />}>
             View projects
             <ArrowRight
               data-icon="inline-end"
@@ -75,6 +77,7 @@ const Home = async () => {
           </Button>
           <Button
             variant={"outline"}
+            nativeButton={false}
             render={<Link href={"/contact"} />}>
             Get in touch
             <Mail
@@ -85,6 +88,7 @@ const Home = async () => {
           {profile && (
             <Button
               variant={"ghost"}
+              nativeButton={false}
               render={<Link href={"/resume"} />}>
               Résumé
               <FileDown
@@ -151,6 +155,7 @@ const Home = async () => {
         </p>
         <Button
           className="mt-6"
+          nativeButton={false}
           render={<Link href={"/contact"} />}>
           Get in touch
           <ArrowRight

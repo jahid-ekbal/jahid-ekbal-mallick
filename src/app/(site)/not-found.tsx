@@ -15,6 +15,7 @@ const NotFound = () => (
       </p>
       <Button
         className="mt-8"
+        nativeButton={false}
         render={<Link href={"/"} />}>
         Back to home
         <House
