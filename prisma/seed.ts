@@ -2,21 +2,21 @@ import "dotenv/config";
 import { PrismaClient } from "@generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
-import { auth } from "../src/lib/auth";
 import { serverEnv } from "../src/lib/env/serverEnv";
 
 /**
- * Fallback admin credentials used when ADMIN_EMAIL / ADMIN_PASSWORD are not
- * configured. They guarantee `bun run db:seed` always leaves the site with a
- * working /login account. For anything reachable by other people, override
- * BOTH values in the host environment before seeding (or rotate the password
- * right after the first sign-in).
+ * Login is OTP-only (Better Auth email-otp plugin -> owner's Discord DMs).
+ * There are no passwords anywhere: ADMIN_EMAIL just names WHICH identity is
+ * the admin. Sign-up through the OTP flow is disabled, so this account must
+ * exist - the seeder guarantees it.
  */
 const DEFAULT_ADMIN_EMAIL = "admin@example.com";
-const DEFAULT_ADMIN_PASSWORD = "admin@example.com";
 
-/** Remote databases get louder warnings when running on default creds. */
+/** Remote databases get louder warnings when Discord delivery is unconfigured. */
 const isRemoteDatabase = serverEnv.DATABASE_URL.startsWith("libsql://");
+const hasDiscordDelivery = Boolean(
+  process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_OWNER_USER_ID,
+);
 
 // Same adapter source-of-truth as src/lib/dbClient/prisma.ts: the validated
 // serverEnv fails fast with a clear error if DATABASE_URL is missing/malformed.
@@ -124,29 +124,25 @@ async function main(): Promise<void> {
   });
 
   // -------------------------------------------------------------------------
-  // Admin account: ADMIN_EMAIL / ADMIN_PASSWORD win; documented defaults are
-  // the fallback so /login always works after a seed. Skips gracefully when
-  // the account already exists, keeping re-seeds idempotent.
+  // Admin identity: creates (or refreshes) the bare user row that the OTP
+  // sign-in flow resolves against. No credentials of any kind are stored.
   // -------------------------------------------------------------------------
-  // Blank-string values in .env (e.g. ADMIN_EMAIL= copied from
-  // .env.example) are treated exactly like missing ones.
   const envEmail = process.env.ADMIN_EMAIL?.trim();
-  const envPassword = process.env.ADMIN_PASSWORD;
-  const usingDefaults = !envEmail || !envPassword;
-  const adminEmail = (envEmail || DEFAULT_ADMIN_EMAIL).toLowerCase();
-  const adminPassword = envPassword || DEFAULT_ADMIN_PASSWORD;
-
-  if (usingDefaults) {
+  // Blank-string values in .env count as unset.
+  const adminEmail = (
+    envEmail || DEFAULT_ADMIN_EMAIL
+  ).toLowerCase();
+  if (!envEmail) {
     console.warn(
-      `ADMIN_EMAIL/ADMIN_PASSWORD not fully set - falling back to built-in ` +
-        `defaults (${adminEmail}). Override both for real deployments.`,
+      `ADMIN_EMAIL not set - defaulting to ${adminEmail}. Set it to rename ` +
+        "the admin identity (display name/email in the dashboard).",
     );
   }
-  if (usingDefaults && isRemoteDatabase) {
+  if (!hasDiscordDelivery && isRemoteDatabase) {
     console.warn(
-      "Targeting a REMOTE database (libsql://) with default admin " +
-        "credentials. Set ADMIN_PASSWORD on the host environment before " +
-        "/login can be reached by others.",
+      "Targeting a REMOTE database without DISCORD_BOT_TOKEN / " +
+        "DISCORD_OWNER_USER_ID - nobody will be able to receive login codes. " +
+        "Configure both on the host environment.",
     );
   }
 
@@ -154,68 +150,19 @@ async function main(): Promise<void> {
   const existing = await prisma.user.findFirst({
     where: { email: adminEmail },
   });
-
   let adminStatus: string;
   if (existing) {
-    // The stored scrypt hash may predate the current ADMIN_PASSWORD (older
-    // seeds skipped existing users, so later .env changes never applied).
-    // Probe with the configured credentials and recreate the account when
-    // they do not match, making .env the source of truth on every seed.
-    const verified = await auth.api
-      .signInEmail({
-        body: { email: adminEmail, password: adminPassword },
-      })
-      .then(() => true, () => false);
-
-    if (verified) {
-      adminStatus = "verified against ADMIN_PASSWORD";
-    } else {
-      console.warn(
-        `Admin account (${adminEmail}) exists but does not match ` +
-          "ADMIN_PASSWORD - recreating it with the configured credentials.",
-      );
-      // Deleting the user cascades its Account + Session rows
-      // (schema defines onDelete: Cascade).
-      await prisma.user.delete({ where: { id: existing.id } });
-      const result = await auth.api.signUpEmail({
-        body: {
-          email: adminEmail,
-          password: adminPassword,
-          name: "Admin",
-        },
-      });
-      if (!result?.user?.id) {
-        throw new Error("Admin user recreation failed");
-      }
-      adminStatus = "recreated with configured credentials";
-    }
+    adminStatus = "already existed";
   } else {
-    const result = await auth.api.signUpEmail({
-      body: {
-        email: adminEmail,
-        password: adminPassword,
+    await prisma.user.create({
+      data: {
+        id: crypto.randomUUID(),
         name: "Admin",
+        email: adminEmail,
+        emailVerified: true,
       },
     });
-    if (!result?.user?.id) {
-      throw new Error("Admin user creation failed");
-    }
     adminStatus = "created";
-  }
-
-  // Server-side auth API calls open real session rows (the probe above
-  // included) that no browser will ever present. Remove them so seeding
-  // leaves zero dangling sessions.
-  const seededAdmin = await prisma.user.findFirst({
-    where: { email: adminEmail },
-    select: { id: true },
-  });
-  let cleanedSessions = 0;
-  if (seededAdmin) {
-    const removed = await prisma.session.deleteMany({
-      where: { userId: seededAdmin.id },
-    });
-    cleanedSessions = removed.count;
   }
 
   const [profiles, projects] = await Promise.all([
@@ -224,8 +171,7 @@ async function main(): Promise<void> {
   ]);
   console.log(
     `Seed complete: ${profiles} profile, ${projects} projects, admin ` +
-      `account ${adminStatus}.` +
-      (cleanedSessions > 0 ? ` Cleaned ${cleanedSessions} seed session(s).` : ""),
+      `account ${adminStatus}.`,
   );
 }
 

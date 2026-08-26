@@ -119,6 +119,16 @@ export const profileSchema = z.object({
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
+export const loginOtpSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .transform((value) => value.toUpperCase())
+    .pipe(z.string().regex(/^[A-Z0-9]{6}$/, "Enter the 6-character code")),
+});
+
+export type LoginOtpValues = z.infer<typeof loginOtpSchema>;
+
 export const githubImportSchema = z.object({
   repo: z.string().trim().min(3).max(300),
   category: z.string().trim().max(40).optional(),

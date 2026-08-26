@@ -55,13 +55,10 @@ bun run dev            # http://localhost:3000
 ```
 
 `bun run setup` copies `.env.example` to `.env` (generating a
-`BETTER_AUTH_SECRET` + placeholder admin credentials if missing), applies
-migrations, generates the Prisma client and seeds the database. Set
-`ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first seed to control
-the dashboard login - if they are unset, the seeder falls back to the
-built-in defaults `admin@example.com` / `admin@example.com`. The admin
-dashboard lives at `/admin`; sign in manually at `/login` - neither page is
-linked anywhere public.
+`BETTER_AUTH_SECRET` if missing), applies migrations, generates the Prisma
+client and seeds the database. Set `ADMIN_EMAIL` in `.env` to name the admin
+identity (optional; defaults to `admin@example.com`) and make sure the two
+`DISCORD_*` variables are filled in - login codes arrive as Discord DMs.
 
 ## 📦 Tech Stack
 
@@ -170,11 +167,13 @@ rollback on failure.
    over the network on every request, so this is the largest latency win. Use
    the Starter instance type or above: Free instances sleep when idle (cold
    starts on public pages) and don't support pre-deploy commands.
-5. **Admin dashboard**: sign in at `https://<your-domain>/login`. Defaults are
-   `admin@example.com` / `admin@example.com` when `ADMIN_EMAIL` /
-   `ADMIN_PASSWORD` were not set before seeding - change them for anything
-   public. The dashboard is never linked from public pages and is excluded
-   from robots/sitemaps.
+5. **Admin dashboard**: login is **OTP-only** - open `https://<your-domain>/login`,
+   click *Send login code*, and a 6-character code arrives as a Discord DM
+   from your bot (valid 3 minutes, resend after 30 s). There is no password;
+   the seeded account is just an identity (`admin@example.com` unless
+   `ADMIN_EMAIL` overrides it) created automatically on first code request or
+   by the seeder. The dashboard is never linked from public pages and is
+   excluded from robots/sitemaps.
 6. **Ongoing deploys**: every push to `main` rebuilds and redeploys
    automatically. Migrations run in the pre-deploy command before the new
    instance accepts traffic - no manual `db:deploy` per release. A failed
