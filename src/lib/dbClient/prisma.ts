@@ -8,6 +8,9 @@ const globalForPrisma = globalThis as unknown as {
 
 const adapter = new PrismaLibSql({
   url: serverEnv.DATABASE_URL,
+  ...(serverEnv.TURSO_AUTH_TOKEN ?
+    { authToken: serverEnv.TURSO_AUTH_TOKEN }
+  : {}),
 });
 
 const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });

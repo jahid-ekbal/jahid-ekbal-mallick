@@ -4,27 +4,37 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n web,bot -c cyan,magenta \"next dev\" \"bun run discord:dev\"",
+    "dev:web": "next dev",
+    "discord:dev": "bun scripts/discord-gateway.ts",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next typegen && tsc --noEmit && eslint",
     "prod": "prisma generate && next build && next start",
     "migrate": "prisma migrate dev && prisma generate",
-    "studio": "prisma studio --browser none"
+    "studio": "prisma studio --browser none",
+    "db:seed": "bun prisma/seed.ts",
+    "db:deploy": "prisma migrate deploy",
+    "discord:register": "bun scripts/register-discord-commands.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@hookform/resolvers": "^5.9.1",
     "@prisma/adapter-libsql": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "@t3-oss/env-nextjs": "^0.13.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "discord-interactions": "^4.4.0",
     "dotenv": "^17.4.2",
     "lucide-react": "^1.26.0",
     "next": "^16.2.11",
     "next-themes": "^0.4.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-hook-form": "^7.86.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "shadcn": "^4.14.1",
     "sharp": "^0.35.3",
     "tailwind-merge": "^3.6.0",
@@ -37,6 +47,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^10.0.5",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.2.11",
     "prettier": "^3.9.6",
@@ -52,8 +63,8 @@
     "unrs-resolver"
   ],
   "engines": {
-    "node": ">=24.x.x",
-    "npm": ">=11.x.x"
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
   },
   "author": "Jahid Ekbal Mallick",
   "license": "MIT",

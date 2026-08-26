@@ -10,7 +10,7 @@ const ThemeToggleButton = () => {
     <button
       type="button"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="flex cursor-pointer items-center">
+      className="relative flex cursor-pointer items-center transition-transform hover:scale-110 active:scale-95">
       <SunIcon
         size={24}
         className="-rotate-90 opacity-100 transition-all duration-300 dark:rotate-0 dark:opacity-0"

@@ -1,8 +1,55 @@
+import type { Metadata, Viewport } from "next";
+
+import Footer from "@/components/Layout/Footer";
+import Header from "@/components/Layout/Header";
 import ThemeProvider from "@/components/Providers/ThemeProvider";
 import { geistMono, geistSans, interHeading } from "@/lib/fonts";
+import { site } from "@/lib/site";
 import { LayoutProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: {
+    default: site.title,
+    template: `%s | ${site.name}`,
+  },
+  description: site.description,
+  keywords: [
+    "full-stack engineer",
+    "UI/UX designer",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Kolkata",
+    site.name,
+  ],
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    url: "/",
+    locale: "en_US",
+    siteName: site.name,
+    title: site.title,
+    description: site.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+  },
+};
 
 const RootLayout = ({ children }: LayoutProps) => {
   return (
@@ -15,12 +62,14 @@ const RootLayout = ({ children }: LayoutProps) => {
         interHeading.variable,
       )}
       suppressHydrationWarning>
-      <body>
+      <body className="flex min-h-dvh flex-col">
         <ThemeProvider
           attribute={"class"}
           defaultTheme="dark"
           enableSystem={false}>
-          {children}
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

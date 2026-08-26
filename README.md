@@ -41,8 +41,9 @@
 ## ✅ Prerequisites
 
 - [Bun](https://bun.sh) - runtime + package manager
-- Node.js >=24.x, npm >=11.x (for compatibility)
+- Node.js >=20.x, npm >=9.x (matches `engines` in package.json)
 - PowerShell 7+ (Windows) or bash (macOS/Linux)
+- [Turso CLI](https://docs.turso.tech/cli/install) (production database only)
 
 ## 🚀 Getting Started
 
@@ -50,11 +51,14 @@
 git clone https://github.com/MrSaikatS/nextjs-starter-fullstack-node.git
 cd nextjs-starter-fullstack-node
 bun install
-bun run migrate    # apply Prisma migrations + generate client
-bun run dev        # start dev server at http://localhost:3000
+cp .env.example .env   # fill DISCORD_* vars if you want the bot locally
+bun run migrate        # apply Prisma migrations + generate client
+bun run db:seed        # upsert portfolio profile content
+bun run dev            # http://localhost:3000 + Discord gateway sidecar
 ```
 
-Copy `.env.example` to `.env` if starting fresh - defaults work for local SQLite.
+`bun run dev` starts two processes via concurrently: the Next.js app (`web`) and
+the Discord gateway sidecar (`bot`). Use `bun run dev:web` for the web app only.
 
 ## 📦 Tech Stack
 
@@ -72,15 +76,90 @@ Copy `.env.example` to `.env` if starting fresh - defaults work for local SQLite
 
 ## ⚙️ Scripts
 
-| Script    | Command                                       |
-| --------- | --------------------------------------------- |
-| `dev`     | `next dev`                                    |
-| `build`   | `prisma generate && next build`               |
-| `start`   | `next start`                                  |
-| `lint`    | `next typegen && tsc --noEmit && eslint`      |
-| `prod`    | `prisma generate && next build && next start` |
-| `migrate` | `prisma migrate dev && prisma generate`       |
-| `studio`  | `prisma studio --browser none`                |
+| Script             | Command                                              |
+| ------------------ | ---------------------------------------------------- |
+| `dev`              | `next dev` + Discord gateway sidecar (concurrently)  |
+| `dev:web`          | `next dev` only                                      |
+| `discord:dev`      | gateway sidecar only                                 |
+| `build`            | `prisma generate && next build`                      |
+| `start`            | `next start`                                         |
+| `lint`             | `next typegen && tsc --noEmit && eslint`             |
+| `prod`             | `prisma generate && next build && next start`        |
+| `migrate`          | `prisma migrate dev && prisma generate`              |
+| `studio`           | `prisma studio --browser none`                       |
+| `db:seed`          | `bun prisma/seed.ts`                                 |
+| `db:deploy`        | `prisma migrate deploy`                              |
+| `discord:register` | registers all global slash commands with Discord API |
+
+## 🧾 Command Reference
+
+### Local development
+
+```sh
+bun install                # install dependencies
+cp .env.example .env       # configure env (DISCORD_* optional locally)
+bun run migrate            # apply/create migrations + generate Prisma client
+bun run db:seed            # seed/upsert profile data
+bun studio                 # browse/edit database (Prisma Studio)
+bun run dev                # dev server + Discord bot sidecar
+bun run dev:web            # dev server only (no bot)
+bun discord:register       # (re-)publish global slash commands
+bun lint                   # typegen + typecheck + eslint
+bun run build              # production build check
+bun prod                   # full local production server
+```
+
+### Vercel production (one-time setup)
+
+```sh
+# 1. Create the Turso database
+turso db create portfolio
+turso db show portfolio --url        # -> DATABASE_URL (libsql://...)
+turso db tokens create portfolio     # -> TURSO_AUTH_TOKEN
+
+# 2. Apply schema + seed against Turso (run from your machine)
+DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
+DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
+
+# 3. Deploy (Vercel builds automatically on push)
+git push
+# or with the CLI:
+vercel --prod
+```
+
+Full environment-variable list and the Discord webhook flip are described in
+[Deploying to Vercel](#-deploying-to-vercel) below.
+
+## 🚀 Deploying to Vercel
+
+Local SQLite files do not persist on serverless, so production uses
+[Turso](https://turso.tech) through the same `@prisma/adapter-libsql`
+adapter. No code changes are needed; only environment variables differ.
+
+1. **Create the database**
+   ```sh
+   turso db create portfolio
+   turso db show portfolio --url      # -> DATABASE_URL (libsql://...)
+   turso db tokens create portfolio   # -> TURSO_AUTH_TOKEN
+   ```
+2. **Push the schema and seed it** (from your machine, env pointed at Turso)
+   ```sh
+   DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
+   DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
+   ```
+3. **Import the repo on Vercel** and set environment variables:
+   - `DATABASE_URL` = your `libsql://...` URL
+   - `TURSO_AUTH_TOKEN` = the token from step 1
+   - `NEXT_PUBLIC_SITE_URL` = `https://<your-domain>` (canonical/OG/sitemap)
+   - the five `DISCORD_*` vars from `.env.example` (optional but recommended)
+4. **Flip Discord to webhook mode**: in the Discord Developer Portal set the
+   Interactions Endpoint URL to `https://<your-domain>/api/discord/interactions`.
+   Gateway and webhook delivery are mutually exclusive, so the local gateway
+   sidecar goes quiet once this is set.
+5. **Ongoing deploys**: every `git push` to the production branch rebuilds and
+   redeploys automatically (`prisma generate && next build` runs in the Vercel
+   build). After adding new migrations locally, run `bun run db:deploy` with
+   the Turso env vars once before or right after deploying.
 
 ## 🔌 Integrations
 
@@ -106,5 +185,5 @@ Check the [issues page](https://github.com/MrSaikatS/nextjs-starter-fullstack-no
 <p align="center">
   Made with ❤️ by <a href="https://github.com/MrSaikatS">Saikat Sardar</a>
   <br>
-  🐛 Report Bug · 💡 Suggest Feature
+  🐛 Report Bug | 💡 Suggest Feature
 </p>
