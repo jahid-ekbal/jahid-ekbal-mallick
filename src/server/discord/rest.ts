@@ -1,5 +1,5 @@
 import { getDiscordConfig, type DiscordConfig } from "./env";
-import type { InteractionResponse, MessagePayload } from "./types";
+import type { MessagePayload } from "./types";
 
 const API_BASE = "https://discord.com/api/v10";
 
@@ -69,33 +69,4 @@ export async function sendLogMirror(
 ): Promise<boolean> {
   if (!config.logChannelId) return false;
   return sendMessage(config.logChannelId, payload);
-}
-
-export async function sendInteractionCallback(
-  interactionId: string,
-  interactionToken: string,
-  payload: InteractionResponse,
-): Promise<boolean> {
-  try {
-    const response = await fetch(
-      `${API_BASE}/interactions/${interactionId}/${interactionToken}/callback`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      },
-    );
-
-    if (!response.ok) {
-      console.error(
-        `[discord] interaction callback failed (${response.status}):`,
-        await response.text().catch(() => ""),
-      );
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.error("[discord] interaction callback error:", error);
-    return false;
-  }
 }

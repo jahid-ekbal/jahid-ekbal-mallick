@@ -30,7 +30,7 @@ const ProjectsGrid = ({ projects }: { projects: Project[] }) => {
             aria-selected={active === category}
             onClick={() => setActive(category)}
             className={cn(
-              "rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+              "rounded-full border px-3.5 py-1.5 text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
               active === category ?
                 "border-foreground bg-foreground text-background"
               : "border-border text-muted-foreground hover:border-ring/50 hover:text-foreground",

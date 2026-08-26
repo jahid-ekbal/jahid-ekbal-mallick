@@ -11,6 +11,7 @@ import { Textarea } from "@/components/shadcnui/textarea";
 import type { ContactFormValues } from "@/lib/zodSchema";
 import { contactSchema } from "@/lib/zodSchema";
 import { submitContactMessage } from "@/server/actions/contact";
+import { toast } from "@/components/shadcnui/toast";
 
 const fields: ReadonlyArray<{
   name: "name" | "email";
@@ -36,7 +37,6 @@ const fields: ReadonlyArray<{
 
 const ContactForm = () => {
   const [sent, setSent] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const {
     handleSubmit,
     control,
@@ -67,12 +67,20 @@ const ContactForm = () => {
   return (
     <form
       onSubmit={handleSubmit(async (values) => {
-        setServerError(null);
         const result = await submitContactMessage(values);
         if (result.ok) {
+          toast.add({
+            type: "success",
+            title: "Message sent",
+            description: "Thanks for reaching out.",
+          });
           setSent(true);
         } else {
-          setServerError(result.error);
+          toast.add({
+            type: "error",
+            title: "Could not send message",
+            description: result.error,
+          });
         }
       })}
       noValidate
@@ -168,12 +176,9 @@ const ContactForm = () => {
         )}
       />
 
-      {serverError && <p className="text-destructive text-sm">{serverError}</p>}
-
       <Button
         type={"submit"}
-        disabled={isSubmitting}
-        className="group">
+        disabled={isSubmitting}>
         {isSubmitting ?
           <>
             Sending{" "}
@@ -186,7 +191,7 @@ const ContactForm = () => {
             Send message{" "}
             <Send
               data-icon="inline-end"
-              className="transition-transform duration-200 group-hover:not-disabled:translate-x-0.5"
+              className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5"
             />
           </>
         }

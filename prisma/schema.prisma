@@ -2,82 +2,180 @@
 // learn more about the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client"
-    output   = "../generated/prisma"
-    // Target runtime environment. Default: nodejs
-    // runtime  = "nodejs"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  // Target runtime environment. Default: nodejs
+  // runtime  = "nodejs"
 }
 
 datasource db {
-    provider = "sqlite"
+  provider = "sqlite"
 }
 
 model Profile {
-    id          String   @id @default("main")
-    name        String
-    headline    String
-    tagline     String
-    bio         String
-    location    String
-    email       String
-    avatarUrl   String?
-    resumeUrl   String?
-    socials     String   @default("{}")
-    skills      String   @default("[]")
-    experiences String   @default("[]")
-    education   String   @default("[]")
-    updatedAt   DateTime @updatedAt
+  id          String   @id @default("main")
+  name        String
+  headline    String
+  tagline     String
+  bio         String
+  location    String
+  email       String
+  avatarUrl   String?
+  resumeUrl   String?
+  socials     String   @default("{}")
+  skills      String   @default("[]")
+  experiences String   @default("[]")
+  education   String   @default("[]")
+  updatedAt   DateTime @updatedAt
 }
 
 model Project {
-    id          String   @id @default(cuid())
-    slug        String   @unique
-    title       String
-    summary     String
-    description String
-    coverImage  String?
-    techStack   String   @default("[]")
-    category    String   @default("General")
-    repoUrl     String?
-    liveUrl     String?
-    featured      Boolean   @default(false)
-    published     Boolean   @default(true)
-    sortOrder     Int       @default(0)
-    repoUpdatedAt DateTime?
-    createdAt     DateTime  @default(now())
-    updatedAt   DateTime @updatedAt
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  summary       String
+  description   String
+  coverImage    String?
+  techStack     String    @default("[]")
+  category      String    @default("General")
+  repoUrl       String?
+  liveUrl       String?
+  featured      Boolean   @default(false)
+  published     Boolean   @default(true)
+  sortOrder     Int       @default(0)
+  repoUpdatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-    @@index([published, sortOrder])
+  @@index([published, sortOrder])
 }
 
 model Post {
-    id          String    @id @default(cuid())
-    seq         Int       @unique
-    slug        String    @unique
-    title       String
-    excerpt     String
-    content     String
-    coverImage  String?
-    tags        String    @default("[]")
-    readingTime Int       @default(1)
-    status      String    @default("DRAFT")
-    source      String    @default("DISCORD")
-    publishedAt DateTime?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  seq         Int       @unique
+  slug        String    @unique
+  title       String
+  excerpt     String
+  content     String
+  coverImage  String?
+  tags        String    @default("[]")
+  readingTime Int       @default(1)
+  status      String    @default("DRAFT")
+  source      String    @default("DISCORD")
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-    @@index([status, publishedAt])
+  @@index([status, publishedAt])
 }
 
 model Message {
-    id        String   @id @default(cuid())
-    name      String
-    email     String
-    subject   String
-    body      String
-    delivered Boolean  @default(false)
-    read      Boolean  @default(false)
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  body      String
+  delivered Boolean  @default(false)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-    @@index([createdAt])
+  @@index([createdAt])
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  issuer                String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model VisitorSession {
+  id          String     @id @default(cuid())
+  visitorKey  String
+  ipAddress   String?
+  country     String?
+  referrer    String?
+  landingPath String
+  device      String?
+  startedAt   DateTime   @default(now())
+  lastSeenAt  DateTime   @default(now())
+  durationSec Int        @default(0)
+  pageviews   Pageview[]
+
+  @@index([startedAt])
+  @@index([visitorKey])
+}
+
+model Pageview {
+  id        String         @id @default(cuid())
+  session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  path      String
+  createdAt DateTime       @default(now())
+
+  @@index([createdAt])
+  @@index([path])
+}
+
+model IpGeoCache {
+  ip          String   @id
+  countryCode String?
+  resolvedAt  DateTime @default(now())
 }

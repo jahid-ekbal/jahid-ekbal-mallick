@@ -10,7 +10,11 @@ const ResumePrintButton = () => (
     size={"sm"}
     className="print:hidden"
     onClick={() => window.print()}>
-    Print / Save PDF <Printer data-icon="inline-end" />
+    Print / Save PDF
+    <Printer
+      data-icon="inline-end"
+      className="transition-transform duration-200 group-hover/button:not-disabled:scale-110"
+    />
   </Button>
 );
 

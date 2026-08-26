@@ -119,20 +119,35 @@ Each field goes through `Controller`:
 
 Submit: `<form onSubmit={handleSubmit(handler)} noValidate>`. Button disabled while submitting with icon toggle.
 
-## Discord bot
+## Discord bot (send-only)
 
-HTTP Interactions webhook at `src/app/api/discord/interactions/route.ts` (no discord.js). Gotchas:
+No commands, no gateway, no webhook. The bot only SENDS: contact-form submissions are mirrored to the owner's DMs (+ optional log channel) via REST.
 
-- Read the raw body as `request.text()` BEFORE parsing; Ed25519 verification (`discord-interactions` v4, WebCrypto) needs the exact bytes.
-- All interaction handlers respond synchronously (type 4/7/9) - DB + REST calls stay well under the 3s ack window. No deferral needed.
-- SQLite can't autoincrement non-id columns: `Post.seq` is allocated via `_max.seq + 1` in `src/server/discord/blogService.ts`.
-- Optional secrets in `serverEnv.ts` use a zod `preprocess` that maps empty strings to `undefined`, so a fresh `.env.example` copy boots without Discord vars.
-- Post-response background work (contact DM delivery) must use `after()` from `next/server` on Vercel.
-- Local webhook testing: spawn `bun run start` with `DISCORD_PUBLIC_KEY` overridden by a test keypair's public key (process env beats `.env`); sign with the matching private key. Kill port 3000 strays first - `Stop-Process` on the bun wrapper PID leaves the node child alive; kill `Get-NetTCPConnection -LocalPort 3000` owners instead.
-- Register/re-register global commands with `bun discord:register`.
-- **Gateway sidecar** (`scripts/discord-gateway.ts`, auto-started by `bun dev` via concurrently): receives INTERACTION_CREATE over a raw WebSocket (Bun native, no deps) and routes through the same `handleInteraction()`; responses go via REST callback (`sendInteractionCallback`). Discord delivers interactions over gateway OR webhook, never both: while developing locally the Dev Portal Interactions Endpoint URL must be EMPTY, after deploy paste the Vercel URL and the sidecar just stops receiving events. Sidecar exits quietly when DISCORD_* vars are missing.
-- `/addrepo url: [category:]` imports a public GitHub repo into Project: fetches repo metadata + base64 README (`githubService.ts`), maps techStack = [language, ...topics] cap 8, category = `category:` override else first topic/language, liveUrl = homepage only if http(s), stores GitHub `pushed_at` as `Project.repoUpdatedAt` (cards render relative "Updated X ago"), published instantly. Unauthenticated GitHub API = 60 req/hr; no token by design.
-- Temp scripts using `@/` aliases MUST live inside the project dir to resolve (bun doesn't apply tsconfig paths outside it); `%TEMP%` scripts need absolute imports. Also `bun -e` breaks on PowerShell `$` escaping - use a temp file instead.
+- Kept: `src/server/discord/{env,rest,notify,types}.ts`. Deleted: all handlers/router/commands/verify/blogService, gateway sidecar, register script, `/api/discord/interactions` route.
+- Env shrunk to `DISCORD_BOT_TOKEN`, `DISCORD_OWNER_USER_ID`, `DISCORD_LOG_CHANNEL_ID` (all optional).
+- Contact DM delivery still uses `after()` from `next/server` on Vercel.
+- GitHub repo import moved out of Discord: `src/server/github/repoImport.ts` (`importProjectFromGitHub`), used by the admin projects page. Unauthenticated GitHub API = 60 req/hr; no token by design.
+- SQLite can't autoincrement non-id columns: `Post.seq` is allocated via `_max.seq + 1` in `src/server/actions/admin/posts.ts`.
+- Optional secrets in `serverEnv.ts` use a zod `preprocess` that maps empty strings to `undefined`.
+- Temp scripts using `@/` aliases MUST live inside the project dir; `bun -e` breaks on PowerShell `$` escaping - use a temp file instead.
+
+## Auth + admin dashboard
+
+- Better Auth 1.7 + `@better-auth/prisma-adapter` over the existing libsql-backed Prisma client. Instance: `src/lib/auth.ts` (`nextCookies()` last plugin); client: `src/lib/auth-client.ts`; mounted at `/api/auth/[...all]`.
+- Better Auth 1.7 REQUIRES an `issuer` column on Account (`local:credential` for passwords). The CLI schema generator missed it - it was added manually; keep it if regenerating.
+- Login at `/login` (client form -> `authClient.signIn.email`). Dashboard at `/admin/*`, never linked publicly, `noindex`, disallowed in robots.
+- Route protection layers: `src/proxy.ts` (Next 16 renamed middleware->proxy) does cookie-presence-only optimistic redirect via `getSessionCookie`; authoritative check is `auth.api.getSession({headers})` in `src/app/admin/layout.tsx` AND at the top of every server action in `src/server/actions/admin/*` (guard helper `requireAdminSession()`).
+- Seed creates the admin via `auth.api.signUpEmail` using `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars (only when the email doesn't exist yet).
+- Public pages live under route group `src/app/(site)/` (Header/Footer chrome); root layout only has html/body/ThemeProvider/AnalyticsTracker so admin+login render clean.
+- typedRoutes is on: literal routes must exist after `next typegen`; dynamic/query-string URLs need `as Route` casts.
+
+## Visitor analytics (self-hosted)
+
+- Tracker: `src/components/analytics/AnalyticsTracker.tsx` in root layout - POSTs `/api/analytics/collect` per pathname change + dwell heartbeats/sendBeacon (~15s while visible).
+- Collector sets first-party cookies `vkey` (visitor id, 1y) and `vkey` session id `vsession` (30min sliding). Bots filtered by UA. Everyone tracked incl. admin.
+- Country: visitor IP (x-forwarded-for) resolved via ipwho.is then ip-api fallback, cached per-IP in `IpGeoCache`; loopback/private IPs store "Local".
+- Retention: sessions older than 90 days pruned probabilistically (~5% of collects).
+- Dashboard `/admin/analytics` (?range=7d|30d|90d): stat cards, daily bar chart (CSS bars, no chart lib runtime needed beyond recharts install), top countries/pages/referrers/devices tables, recent sessions with time spent.
 
 ## Git commits
 

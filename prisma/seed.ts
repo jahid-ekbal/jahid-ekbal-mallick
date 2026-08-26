@@ -2,6 +2,8 @@ import "dotenv/config";
 import { PrismaClient } from "@generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
+import { auth } from "../src/lib/auth";
+
 const adapter = new PrismaLibSql({
   url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
   ...(process.env.TURSO_AUTH_TOKEN ?
@@ -100,11 +102,37 @@ async function main() {
     create: profile,
   });
 
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  let adminCreated = false;
+
+  if (adminEmail && adminPassword) {
+    const existing = await prisma.user.findFirst({
+      where: { email: adminEmail },
+    });
+    if (!existing) {
+      const result = await auth.api.signUpEmail({
+        body: {
+          email: adminEmail,
+          password: adminPassword,
+          name: "Admin",
+        },
+      });
+      adminCreated = result?.user?.id !== undefined;
+      if (!adminCreated) {
+        throw new Error("Admin user creation failed");
+      }
+    }
+  }
+
   const [profiles, projects] = await Promise.all([
     prisma.profile.count(),
     prisma.project.count(),
   ]);
-  console.log(`Seed complete: ${profiles} profile, ${projects} projects.`);
+  console.log(
+    `Seed complete: ${profiles} profile, ${projects} projects.` +
+      (adminCreated ? " Admin user created." : ""),
+  );
 }
 
 main()

@@ -1,8 +1,8 @@
 import prisma from "@/lib/dbClient/prisma";
+import { truncate } from "@/lib/content";
 import type { EmbedPayload } from "./types";
 import { getDiscordConfig } from "./env";
 import { sendLogMirror, sendOwnerDm } from "./rest";
-import { truncate } from "./utils";
 
 export async function deliverContactMessage(messageId: string): Promise<void> {
   const config = getDiscordConfig();

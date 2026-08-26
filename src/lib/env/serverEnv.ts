@@ -20,10 +20,12 @@ export const serverEnv = createEnv({
     NEXT_TELEMETRY_DISABLED: z.enum(["1", "0"]).optional(),
     CHECKPOINT_DISABLE: z.enum(["1", "0"]).optional(),
     DISCORD_BOT_TOKEN: optionalDiscordVar,
-    DISCORD_APPLICATION_ID: optionalDiscordVar,
-    DISCORD_PUBLIC_KEY: optionalDiscordVar,
     DISCORD_OWNER_USER_ID: optionalDiscordVar,
     DISCORD_LOG_CHANNEL_ID: optionalDiscordVar,
+    BETTER_AUTH_SECRET: z
+      .string()
+      .min(32, { error: "BETTER_AUTH_SECRET must be at least 32 characters" }),
+    BETTER_AUTH_URL: z.url().optional(),
   },
   experimental__runtimeEnv: process.env,
 });

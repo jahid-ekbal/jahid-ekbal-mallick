@@ -50,15 +50,16 @@
 ```bash
 git clone https://github.com/MrSaikatS/nextjs-starter-fullstack-node.git
 cd nextjs-starter-fullstack-node
-bun install
-cp .env.example .env   # fill DISCORD_* vars if you want the bot locally
-bun run migrate        # apply Prisma migrations + generate client
-bun run db:seed        # upsert portfolio profile content
-bun run dev            # http://localhost:3000 + Discord gateway sidecar
+bun run setup          # install deps, create .env, migrate, seed (incl. admin user)
+bun run dev            # http://localhost:3000
 ```
 
-`bun run dev` starts two processes via concurrently: the Next.js app (`web`) and
-the Discord gateway sidecar (`bot`). Use `bun run dev:web` for the web app only.
+`bun run setup` copies `.env.example` to `.env` (generating a
+`BETTER_AUTH_SECRET` + placeholder admin credentials if missing), applies
+migrations, generates the Prisma client and seeds the database. Set
+`ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first seed to control
+the dashboard login. The admin dashboard lives at `/admin`; sign in manually
+at `/login` - neither page is linked anywhere public.
 
 ## 📦 Tech Stack
 
@@ -76,34 +77,31 @@ the Discord gateway sidecar (`bot`). Use `bun run dev:web` for the web app only.
 
 ## ⚙️ Scripts
 
-| Script             | Command                                              |
-| ------------------ | ---------------------------------------------------- |
-| `dev`              | `next dev` + Discord gateway sidecar (concurrently)  |
-| `dev:web`          | `next dev` only                                      |
-| `discord:dev`      | gateway sidecar only                                 |
-| `build`            | `prisma generate && next build`                      |
-| `start`            | `next start`                                         |
-| `lint`             | `next typegen && tsc --noEmit && eslint`             |
-| `prod`             | `prisma generate && next build && next start`        |
-| `migrate`          | `prisma migrate dev && prisma generate`              |
-| `studio`           | `prisma studio --browser none`                       |
-| `db:seed`          | `bun prisma/seed.ts`                                 |
-| `db:deploy`        | `prisma migrate deploy`                              |
-| `discord:register` | registers all global slash commands with Discord API |
+| Script      | Command                                               |
+| ----------- | ----------------------------------------------------- |
+| `setup`     | install + configure everything (deps, .env, DB, seed) |
+| `deploy`    | lint, build, Turso migrate+seed, git commit/push      |
+| `dev`       | `next dev`                                            |
+| `build`     | `prisma generate && next build`                       |
+| `start`     | `next start`                                          |
+| `lint`      | `next typegen && tsc --noEmit && eslint`              |
+| `prod`      | `prisma generate && next build && next start`         |
+| `migrate`   | `prisma migrate dev && prisma generate`               |
+| `studio`    | `prisma studio --browser none`                        |
+| `db:seed`   | `bun prisma/seed.ts`                                  |
+| `db:deploy` | `prisma migrate deploy`                               |
 
 ## 🧾 Command Reference
 
 ### Local development
 
 ```sh
-bun install                # install dependencies
-cp .env.example .env       # configure env (DISCORD_* optional locally)
+bun run setup              # one command: install + configure all dependencies
+cp .env.example .env       # or configure env manually (see file comments)
 bun run migrate            # apply/create migrations + generate Prisma client
-bun run db:seed            # seed/upsert profile data
+bun run db:seed            # seed profile data + first admin user
 bun studio                 # browse/edit database (Prisma Studio)
-bun run dev                # dev server + Discord bot sidecar
-bun run dev:web            # dev server only (no bot)
-bun discord:register       # (re-)publish global slash commands
+bun run dev                # dev server at http://localhost:3000
 bun lint                   # typegen + typecheck + eslint
 bun run build              # production build check
 bun prod                   # full local production server
@@ -151,15 +149,18 @@ adapter. No code changes are needed; only environment variables differ.
    - `DATABASE_URL` = your `libsql://...` URL
    - `TURSO_AUTH_TOKEN` = the token from step 1
    - `NEXT_PUBLIC_SITE_URL` = `https://<your-domain>` (canonical/OG/sitemap)
-   - the five `DISCORD_*` vars from `.env.example` (optional but recommended)
-4. **Flip Discord to webhook mode**: in the Discord Developer Portal set the
-   Interactions Endpoint URL to `https://<your-domain>/api/discord/interactions`.
-   Gateway and webhook delivery are mutually exclusive, so the local gateway
-   sidecar goes quiet once this is set.
+   - `BETTER_AUTH_SECRET` = 32+ char secret (login sessions)
+   - `BETTER_AUTH_URL` = `https://<your-domain>`
+   - the three `DISCORD_*` vars from `.env.example` (optional; send-only DMs)
+4. **Admin dashboard**: sign in at `https://<your-domain>/login` with the
+   seeded admin credentials to manage projects, posts, profile and messages.
+   The dashboard is never linked from public pages and is excluded from
+   robots/sitemaps.
 5. **Ongoing deploys**: every `git push` to the production branch rebuilds and
    redeploys automatically (`prisma generate && next build` runs in the Vercel
-   build). After adding new migrations locally, run `bun run db:deploy` with
-   the Turso env vars once before or right after deploying.
+   build). After adding new migrations locally, run `bun run deploy`, which
+   lints, builds, applies migrations + seeds against Turso, then commits and
+   pushes in one step.
 
 ## 🔌 Integrations
 

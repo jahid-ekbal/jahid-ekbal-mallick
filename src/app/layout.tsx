@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 
-import Footer from "@/components/Layout/Footer";
-import Header from "@/components/Layout/Header";
 import ThemeProvider from "@/components/Providers/ThemeProvider";
+import { Toaster } from "@/components/shadcnui/toast";
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { geistMono, geistSans, interHeading } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { LayoutProps } from "@/lib/types";
@@ -67,9 +67,9 @@ const RootLayout = ({ children }: LayoutProps) => {
           attribute={"class"}
           defaultTheme="dark"
           enableSystem={false}>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {children}
+          <AnalyticsTracker />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
