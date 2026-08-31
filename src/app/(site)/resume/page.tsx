@@ -4,7 +4,7 @@ import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Résumé",
-  `Résumé of ${site.name}, full-stack engineer and UI/UX designer.`,
+  `Résumé of ${site.name}, full-stack developer and UI/UX designer.`,
   "/resume",
 );
 

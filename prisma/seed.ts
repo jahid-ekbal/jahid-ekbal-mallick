@@ -32,17 +32,16 @@ const prisma = new PrismaClient({
 const profile = {
   id: "main",
   name: "Jahid Ekbal Mallick",
-  headline: "Full-Stack Engineer | UI/UX Designer",
+  headline: "Full-Stack Developer & Digital Creator",
   tagline:
-    "I build fast, clean web apps end to end, and give interfaces life with motion.",
+    "I craft digital experiences that merge technical precision with visual innovation to build engaging web solutions.",
   bio: [
-    "I'm Jahid Ekbal Mallick, a full-stack developer from Kolkata, India. I design and build complete products with Next.js, TypeScript and C#, and I care about the details: type-safe APIs, quick page loads, accessible interfaces, and code the next engineer can actually read.",
-    "I'm equally comfortable in low-level territory: C++ with real-time vector math, C# desktop tools, Python network scripting, and PowerShell automation for Windows. Across two GitHub profiles I've shipped 60+ public repositories spanning web apps, Discord bots, auth platforms, and native tooling.",
-    "I like interfaces that feel alive. Framer Motion and GSAP drive the transitions I prototype in Figma, leaning into a liquid-glass, cyberpunk-inspired visual language.",
-    "Outside the editor I run video production for REGIX Esports, cutting cinematic intros and motion posters for esports broadcasts.",
+    "I'm Jahid Ekbal Mallick, a Full-Stack Developer & Digital Creator from Kolkata, India. I craft digital experiences that merge technical precision with visual innovation, bridging functionality and aesthetics to build engaging web solutions.",
+    "Development expertise: HTML5, CSS3, JavaScript (ES6+), React, Next.js, TypeScript, Tailwind CSS, Bootstrap — responsive, mobile-first. Design specialization: UI/UX prototyping in Figma (advanced), Adobe Photoshop & Premiere Pro, Blender 3D, digital advertising, social content and YouTube thumbnail production.",
+    "What I deliver: pixel-perfect responsive websites, interactive web apps, user-centric interfaces, social campaigns, professional video & thumbnails, and custom ad assets. My workflow combines clean, maintainable code with compelling visuals — solving digital challenges with creativity and precision. For business inquiries: jahidekbal.io@gmail.com",
   ].join("\n\n"),
   location: "Kolkata, India",
-  email: "",
+  email: "jahidekbal.io@gmail.com",
   avatarUrl: null,
   resumeUrl: null,
   socials: JSON.stringify({
@@ -58,58 +57,44 @@ const profile = {
   skills: JSON.stringify([
     {
       category: "Frontend",
-      items: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+      items: [
+        "HTML5",
+        "CSS3",
+        "JavaScript (ES6+)",
+        "TypeScript",
+        "React",
+        "Next.js",
+      ],
     },
     {
       category: "Backend",
-      items: ["Node.js", "Bun", "SQLite", "Prisma", "API Design", "Go"],
-    },
-    {
-      category: "Systems",
-      items: ["C++", "C#", "Python", "PowerShell", "Windows Internals"],
+      items: [
+        "Node.js",
+        "Bun",
+        "SQLite",
+        "Prisma",
+        "Tailwind CSS",
+        "Bootstrap",
+      ],
     },
     {
       category: "Design",
-      items: ["Figma", "Adobe XD", "Photoshop"],
+      items: ["Figma", "Adobe XD", "Photoshop", "Premiere Pro", "Blender"],
     },
     {
-      category: "Motion",
-      items: ["After Effects", "Premiere Pro", "Framer Motion", "GSAP"],
+      category: "Delivery",
+      items: [
+        "Responsive Design",
+        "UI/UX",
+        "Video Production",
+        "Digital Ads",
+        "Thumbnails",
+      ],
     },
   ]),
-  experiences: JSON.stringify([
-    {
-      role: "Founder & Lead Editor",
-      company: "REGIX Esports",
-      period: "2020 - Present",
-      description:
-        "Run video production for the REGIX Esports brand: high-octane cinematic intros, motion posters, and broadcast graphics. Built the team's visual identity around a liquid-glass, cyberpunk aesthetic.",
-    },
-    {
-      role: "Independent Full-Stack Developer",
-      company: "Open Source",
-      period: "2021 - Present",
-      description:
-        "66 public repositories across two GitHub profiles (jahid-ekbal, official-jahid). Shipped Next.js and React products end to end: an auth platform pairing a Go backend with a TypeScript frontend, an e-commerce store, a realtime chat app, and full-stack CRUD on Prisma + SQLite. Built Discord bots in TypeScript for moderation, music playback, and chat filtering, plus local-AI dev setups around Ollama.",
-    },
-    {
-      role: "Systems & Tooling Programmer",
-      company: "REGIX Labs",
-      period: "2020 - Present",
-      description:
-        "Low-level Windows and game-tooling engineering: C++ engines with real-time 3D vector math and ImGui interfaces, C# desktop panels, Python network automation and security scripting, and PowerShell optimization suites tuned for gaming PCs.",
-    },
-  ]),
-  education: JSON.stringify([
-    {
-      degree: "IT Programming",
-      school: "Central Institute of Technology (CIT), West Bengal",
-      period: "",
-      description:
-        "Focus: data structures, web systems, and system architecture.",
-      url: "https://citindia.in",
-    },
-  ]),
+  // Journey emptied per request — repopulate later via /admin/profile (experiences/education)
+  experiences: JSON.stringify([]),
+  education: JSON.stringify([]),
 };
 
 async function main(): Promise<void> {
@@ -129,9 +114,7 @@ async function main(): Promise<void> {
   // -------------------------------------------------------------------------
   const envEmail = process.env.ADMIN_EMAIL?.trim();
   // Blank-string values in .env count as unset.
-  const adminEmail = (
-    envEmail || DEFAULT_ADMIN_EMAIL
-  ).toLowerCase();
+  const adminEmail = (envEmail || DEFAULT_ADMIN_EMAIL).toLowerCase();
   if (!envEmail) {
     console.warn(
       `ADMIN_EMAIL not set - defaulting to ${adminEmail}. Set it to rename ` +

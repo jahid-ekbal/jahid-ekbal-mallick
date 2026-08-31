@@ -71,9 +71,19 @@ function normalize(ref: RepoRef): RepoRef | null {
   return { owner, repo };
 }
 
+function githubToken(): string | undefined {
+  return (
+    process.env.GITHUB_TOKEN?.trim() ||
+    process.env.GH_TOKEN?.trim() ||
+    process.env.GITHUB_PAT?.trim() ||
+    undefined
+  );
+}
+
 async function githubFetch<T>(
   path: string,
 ): Promise<{ ok: true; data: T } | { ok: false; status: number }> {
+  const token = githubToken();
   let response: Response;
   try {
     response = await fetch(`${GITHUB_API}${path}`, {
@@ -81,6 +91,7 @@ async function githubFetch<T>(
         Accept: "application/vnd.github+json",
         "User-Agent": "portfolio-site",
         "X-GitHub-Api-Version": "2022-11-28",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
   } catch (error) {
@@ -113,7 +124,7 @@ async function uniqueProjectSlug(base: string): Promise<string> {
   return slug;
 }
 
-function buildTechStack(
+export function buildTechStack(
   language: string | null,
   topics: string[] | undefined,
 ): string[] {
@@ -129,7 +140,10 @@ function buildTechStack(
   return stack;
 }
 
-function buildCategory(language: string | null, topics: string[] | undefined) {
+export function buildCategory(
+  language: string | null,
+  topics: string[] | undefined,
+) {
   const source = topics?.[0]?.trim() || language?.trim() || "";
   if (!source) return "General";
   return source.charAt(0).toUpperCase() + source.slice(1);

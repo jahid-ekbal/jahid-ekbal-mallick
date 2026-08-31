@@ -1,12 +1,11 @@
-import { Mail } from "lucide-react";
-
-import ContactForm from "@/components/ContactForm";
+import ContactSocialGrid from "@/components/ContactSocialGrid";
+import { Separator } from "@/components/shadcnui/separator";
 import { getProfile } from "@/lib/data";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Contact",
-  "Get in touch about roles, projects, or collaborations.",
+  "Connect with me on social platforms — click a card to open, right-click or tap ••• for Copy link and QR.",
   "/contact",
 );
 
@@ -17,24 +16,25 @@ const ContactPage = async () => {
     <div className="mx-auto max-w-3xl px-6">
       <section className="py-16 sm:py-20">
         <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
-          Get in touch
+          Connect
         </h1>
         <p className="text-muted-foreground mt-4 max-w-xl">
-          Have a role, project, or question? Send a message and it lands
-          directly with me.
+          Find me on the platforms I use. Each card is square with the icon in
+          the center — click to open directly (desktop and phone), right-click
+          or use ••• (mobile) for Go to app, Copy link, or Show QR.
         </p>
 
-        <div className="border-border bg-card mt-10 rounded-xl border p-6 sm:p-8">
-          <ContactForm />
-        </div>
+        <Separator className="my-8" />
 
-        {profile?.email && (
-          <a
-            href={`mailto:${profile.email}`}
-            className="text-muted-foreground hover:text-foreground mt-6 inline-flex items-center gap-2 text-sm transition-colors">
-            <Mail size={14} /> {profile.email}
-          </a>
-        )}
+        <ContactSocialGrid
+          socials={profile?.socials ?? {}}
+          email={profile?.email}
+        />
+
+        <p className="text-muted-foreground mt-8 text-center text-xs">
+          Tip: Click a card to open directly. Right-click (desktop) or tap •••
+          (mobile) for Copy link and QR.
+        </p>
       </section>
     </div>
   );

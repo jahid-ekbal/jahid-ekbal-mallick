@@ -61,6 +61,20 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "512kb",
     },
   },
+  async redirects() {
+    return [
+      { source: "/about", destination: "/", permanent: true },
+      { source: "/about/:path*", destination: "/", permanent: true },
+      { source: "/experience", destination: "/journey", permanent: true },
+      {
+        source: "/experience/:path*",
+        destination: "/journey",
+        permanent: true,
+      },
+      { source: "/blog", destination: "/", permanent: false },
+      { source: "/blog/:path*", destination: "/", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {

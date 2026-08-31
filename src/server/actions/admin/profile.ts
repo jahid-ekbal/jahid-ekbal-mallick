@@ -49,7 +49,6 @@ export async function saveProfile(input: unknown): Promise<AdminResult> {
 
     revalidatePath("/admin/profile");
     revalidatePath("/");
-    revalidatePath("/about");
     revalidatePath("/resume");
     revalidatePath("/contact");
     return { ok: true };

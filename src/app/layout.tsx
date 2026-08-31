@@ -24,7 +24,8 @@ export const metadata: Metadata = {
   },
   description: site.description,
   keywords: [
-    "full-stack engineer",
+    "full-stack developer",
+    "digital creator",
     "UI/UX designer",
     "React",
     "Next.js",

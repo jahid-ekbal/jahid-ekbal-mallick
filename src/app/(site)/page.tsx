@@ -1,17 +1,13 @@
-import { ArrowRight, FileDown, Mail, MapPin } from "lucide-react";
+import { FileDown, MapPin } from "lucide-react";
 import Link from "next/link";
 
-import ProjectCard from "@/components/ProjectCard";
 import Section from "@/components/Section";
 import { Button } from "@/components/shadcnui/button";
-import { getFeaturedProjects, getProfile } from "@/lib/data";
+import { getProfile } from "@/lib/data";
 import { site } from "@/lib/site";
 
 const Home = async () => {
-  const [profile, featured] = await Promise.all([
-    getProfile(),
-    getFeaturedProjects(3),
-  ]);
+  const profile = await getProfile();
 
   const jsonLd =
     profile ?
@@ -66,28 +62,8 @@ const Home = async () => {
         )}
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button
-            nativeButton={false}
-            render={<Link href={"/projects"} />}>
-            View projects
-            <ArrowRight
-              data-icon="inline-end"
-              className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5"
-            />
-          </Button>
-          <Button
-            variant={"outline"}
-            nativeButton={false}
-            render={<Link href={"/contact"} />}>
-            Get in touch
-            <Mail
-              data-icon="inline-end"
-              className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5"
-            />
-          </Button>
           {profile && (
             <Button
-              variant={"ghost"}
               nativeButton={false}
               render={<Link href={"/resume"} />}>
               Résumé
@@ -100,25 +76,26 @@ const Home = async () => {
         </div>
       </section>
 
-      <Section
-        title={"Featured projects"}
-        action={
-          <Link
-            href={"/projects"}
-            className="group text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm transition-colors">
-            View all
-            <ArrowRight
-              size={14}
-              className="transition-transform duration-200 group-hover:translate-x-0.5"
-            />
-          </Link>
-        }>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((project) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-            />
+      <Section title={"About me"}>
+        {profile?.location && (
+          <p className="text-muted-foreground mb-4 flex items-center gap-1.5 text-sm">
+            <MapPin size={14} /> {profile.location}
+            {profile.email && (
+              <>
+                <span className="mx-2">·</span>
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="underline decoration-dotted underline-offset-4">
+                  {profile.email}
+                </a>
+              </>
+            )}
+          </p>
+        )}
+
+        <div className="text-muted-foreground space-y-5 text-base leading-relaxed">
+          {(profile?.bio ?? "").split("\n\n").map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
           ))}
         </div>
       </Section>
@@ -145,25 +122,6 @@ const Home = async () => {
           </div>
         </Section>
       )}
-
-      <section className="border-border/60 border-t py-16 text-center sm:py-20">
-        <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-          Let&apos;s build something great.
-        </h2>
-        <p className="text-muted-foreground mx-auto mt-3 max-w-md">
-          I&apos;m open to full-time roles and interesting collaborations.
-        </p>
-        <Button
-          className="mt-6"
-          nativeButton={false}
-          render={<Link href={"/contact"} />}>
-          Get in touch
-          <ArrowRight
-            data-icon="inline-end"
-            className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5"
-          />
-        </Button>
-      </section>
     </div>
   );
 };

@@ -12,7 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/shadcnui/table";
-import { Badge } from "@/components/shadcnui/badge";
+import { Separator } from "@/components/shadcnui/separator";
+import {
+  DailyTrafficChart,
+  DevicesChart,
+} from "@/components/admin/AnalyticsCharts";
 import { getAnalytics, type RangeKey } from "@/server/analytics/stats";
 
 const COUNTRY_NAMES: Record<string, string> = {
@@ -60,7 +64,6 @@ export default async function AnalyticsPage({
   ];
 
   const ranges: RangeKey[] = ["7d", "30d", "90d"];
-  const maxDaily = Math.max(1, ...data.daily.map((d) => d.pageviews));
 
   return (
     <div className="space-y-6">
@@ -107,31 +110,22 @@ export default async function AnalyticsPage({
         ))}
       </div>
 
+      <Separator />
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Daily traffic</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex h-40 items-end gap-1">
-            {data.daily.slice(-45).map((day) => (
-              <div
-                key={day.date}
-                title={`${day.date}: ${day.visitors} visitors, ${day.pageviews} views`}
-                className="bg-primary/70 hover:bg-primary flex-1 rounded-t transition-colors"
-                style={{
-                  height: `${Math.max(4, (day.pageviews / maxDaily) * 100)}%`,
-                }}
-              />
-            ))}
-            {data.daily.length === 0 && (
-              <p className="text-muted-foreground text-sm">No data yet.</p>
-            )}
-          </div>
+          <DailyTrafficChart data={data.daily} />
           <p className="text-muted-foreground mt-2 text-xs">
-            Last {Math.min(45, data.daily.length)} days by pageviews
+            Last {Math.min(30, data.daily.length)} days by pageviews and
+            visitors
           </p>
         </CardContent>
       </Card>
+
+      <Separator />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -211,17 +205,8 @@ export default async function AnalyticsPage({
           <CardHeader>
             <CardTitle className="text-base">Devices</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {data.devices.map((row) => (
-              <Badge
-                key={row.name}
-                variant="secondary">
-                {row.name}: {row.count}
-              </Badge>
-            ))}
-            {data.devices.length === 0 && (
-              <p className="text-muted-foreground text-sm">No data yet.</p>
-            )}
+          <CardContent>
+            <DevicesChart data={data.devices} />
           </CardContent>
         </Card>
       </div>

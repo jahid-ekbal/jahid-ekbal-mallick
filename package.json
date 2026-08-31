@@ -17,7 +17,12 @@
     "db:reset": "prisma migrate reset --force",
     "db:deploy": "prisma migrate deploy",
     "setup": "bun scripts/setup.ts",
-    "deploy": "bun scripts/deploy.ts"
+    "deploy": "bun scripts/deploy.ts",
+    "import:github": "bun scripts/import-github.ts",
+    "import:github:dry": "bun scripts/import-github.ts --dry-run",
+    "sync:about": "bun scripts/sync-about.ts --apply",
+    "sync:about:dry": "bun scripts/sync-about.ts --dry-run",
+    "sync:about:reset-journey": "bun scripts/sync-about.ts --apply --reset-journey"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -33,6 +38,7 @@
     "lucide-react": "^1.26.0",
     "next": "^16.2.11",
     "next-themes": "^0.4.6",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.86.0",
