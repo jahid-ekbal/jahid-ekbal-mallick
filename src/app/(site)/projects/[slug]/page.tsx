@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 import Markdown from "@/components/Markdown";
+import Reveal from "@/components/Reveal";
+import TiltCard from "@/components/TiltCard";
 import { GitHubIcon } from "@/components/icons";
-import { Button } from "@/components/shadcnui/button";
+import { buttonVariants } from "@/components/shadcnui/button";
 import { getAllProjects, getProjectBySlug } from "@/lib/data";
 
-export const revalidate = 300;
-
-export function generateStaticParams() {
-  return getAllProjects().then((projects) =>
-    projects.map((project) => ({ slug: project.slug })),
-  );
+export async function generateStaticParams() {
+  const projects = await getAllProjects();
+  return projects.map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata(
@@ -33,13 +31,11 @@ export async function generateMetadata(
       description: project.summary,
       type: "article",
       url: `/projects/${project.slug}`,
-      images: project.coverImage ? [{ url: project.coverImage }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.summary,
-      images: project.coverImage ? [project.coverImage] : undefined,
     },
   };
 }
@@ -53,7 +49,8 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
     <div className="mx-auto max-w-3xl px-6">
       <section className="py-16 sm:py-20">
         <Link
-          href={"/projects"}
+          href="/projects"
+          prefetch={false}
           className="group text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors">
           <ArrowLeft
             size={14}
@@ -62,55 +59,43 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
           All projects
         </Link>
 
-        <p className="text-muted-foreground mt-8 text-xs font-medium tracking-wide uppercase">
-          {project.category}
-        </p>
-        <h1 className="font-heading mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          {project.title}
-        </h1>
-        <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-          {project.summary}
-        </p>
+        <Reveal>
+          <p className="text-muted-foreground mt-8 text-xs font-medium tracking-wide uppercase">
+            {project.category}
+          </p>
+          <h1 className="font-heading mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+            {project.title}
+          </h1>
+          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+            {project.summary}
+          </p>
+        </Reveal>
 
         {(project.liveUrl || project.repoUrl) && (
           <div className="mt-6 flex flex-wrap gap-3">
             {project.liveUrl && (
-              <Button
-                nativeButton={false}
-                render={
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  />
-                }>
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({ variant: "default", size: "sm" })}>
                 Visit site
-                <ArrowUpRight
-                  data-icon="inline-end"
-                  className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5 group-hover/button:not-disabled:-translate-y-0.5"
-                />
-              </Button>
+                <ArrowUpRight />
+              </a>
             )}
             {project.repoUrl && (
-              <Button
-                variant={"outline"}
-                nativeButton={false}
-                render={
-                  <a
-                    href={project.repoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={"Source code on GitHub"}
-                  />
-                }>
+              <a
+                href={project.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Source code on GitHub"
+                className={buttonVariants({ variant: "outline", size: "sm" })}>
                 <GitHubIcon
                   width={16}
                   height={16}
-                  data-icon="inline-start"
-                  className="transition-transform duration-200 group-hover/button:not-disabled:rotate-12"
                 />{" "}
                 Source
-              </Button>
+              </a>
             )}
           </div>
         )}
@@ -127,18 +112,11 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
           </ul>
         )}
 
-        {project.coverImage && (
-          <div className="border-border relative mt-10 aspect-[16/9] overflow-hidden rounded-xl border">
-            <Image
-              src={project.coverImage}
-              alt={`${project.title} cover`}
-              fill
-              sizes="(max-width: 768px) 100vw, 768px"
-              priority
-              className="object-cover"
-            />
-          </div>
-        )}
+        <TiltCard className="border-border bg-muted relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-xl border">
+          <span className="font-heading text-foreground/15 absolute inset-0 grid place-items-center text-5xl font-semibold select-none">
+            {project.title.charAt(0)}
+          </span>
+        </TiltCard>
 
         <article className="border-border mt-12 border-t pt-10">
           <Markdown>{project.description}</Markdown>

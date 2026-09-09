@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 
 import ThemeProvider from "@/components/Providers/ThemeProvider";
 import { Toaster } from "@/components/shadcnui/toast";
-import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { geistMono, geistSans, interHeading } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { LayoutProps } from "@/lib/types";
@@ -69,7 +68,6 @@ const RootLayout = ({ children }: LayoutProps) => {
           defaultTheme="dark"
           enableSystem={false}>
           {children}
-          <AnalyticsTracker />
           <Toaster />
         </ThemeProvider>
       </body>

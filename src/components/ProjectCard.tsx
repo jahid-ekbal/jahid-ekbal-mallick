@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { Project } from "@/lib/data";
-import { cn, formatRelativeTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const gradients = [
   "from-blue-500/20 via-indigo-500/10 to-transparent",
@@ -28,6 +28,7 @@ const ProjectCard = ({
   className?: string;
 }) => (
   <Link
+    prefetch={false}
     href={`/projects/${project.slug}`}
     className={cn(
       "group border-border bg-card hover:border-ring/50 flex flex-col overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md",
@@ -70,11 +71,6 @@ const ProjectCard = ({
       <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
         {project.summary}
       </p>
-      {project.repoUpdatedAt && (
-        <p className="text-muted-foreground/80 text-xs">
-          Updated {formatRelativeTime(project.repoUpdatedAt)}
-        </p>
-      )}
 
       <ul className="mt-auto flex flex-wrap gap-1.5 pt-3">
         {project.techStack.slice(0, 4).map((tech) => (

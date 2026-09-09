@@ -8,78 +8,86 @@ This version has breaking changes - APIs, conventions, and file structure may al
 
 ## Stack
 
-| Pkg           | Ver                | Note                                                                                                                                                                                                                                                                                                                               |
-| ------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Next.js       | ^16.2              | `reactCompiler: true`, `typedRoutes: true`                                                                                                                                                                                                                                                                                         |
-| React         | ^19.2              |                                                                                                                                                                                                                                                                                                                                    |
-| TypeScript    | ^5.9               | strict, ESNext module, bundler resolution                                                                                                                                                                                                                                                                                          |
-| Prisma        | ^7.9               | Uses `prisma-client` generator (not `prisma-client-js`). Output: `generated/prisma`. Driver adapter: `@prisma/adapter-libsql` for SQLite. Config: `prisma.config.ts`. DATABASE_URL accepts `file:./` (dev) or `libsql://` (Turso prod, needs TURSO_AUTH_TOKEN; wired in dbClient + seed). Prod setup: README "Deploying to Render" |
-| shadcn/ui     | base-vega style    | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`                                                                                                                                                                                                                                                       |
-| Base UI React | ^1.6               | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)                                                                                                                                                                                                                                                           |
-| Tailwind CSS  | ^4.3               | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`                                                                                                                                                                                                                                                             |
-| Zod           | ^4.4               | Schema validation                                                                                                                                                                                                                                                                                                                  |
-| env           | @t3-oss/env-nextjs | Split: `src/lib/env/serverEnv.ts` + `clientEnv.ts`                                                                                                                                                                                                                                                                                 |
+| Pkg           | Ver                | Note                                                                             |
+| ------------- | ------------------ | -------------------------------------------------------------------------------- |
+| Next.js       | ^16.2              | `reactCompiler: true`, `typedRoutes: true`, `output: export` (static, no server) |
+| React         | ^19.2              |                                                                                  |
+| TypeScript    | ^5.9               | strict, ESNext module, bundler resolution                                        |
+| R3F / three   | ^9.7 / ^0.186      | Home hero 3D canvas only, with reduced-motion fallback                           |
+| shadcn/ui     | base-vega style    | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`     |
+| Base UI React | ^1.6               | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)         |
+| Tailwind CSS  | ^4.3               | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`           |
+| Zod           | ^4.4               | Kept as dep, no active schemas (static site, nothing posts to a server)          |
+| env           | @t3-oss/env-nextjs | Kept as dep, unused at runtime (only `NEXT_PUBLIC_SITE_URL` via `process.env`)   |
 
-Path aliases: `@/*` → `./src/*`, `@generated/*` → `./generated/*`.
+Path aliases: `@/*` → `./src/*`.
+
+## Standing user rules (do not drop)
+
+- **Verification uses `playwright-cli` only, always in `--headed` mode.** Run `playwright-cli --help` to see all commands. Core flow: `open --headed <url>`, `goto`, `snapshot`, `find`, `click`, `fill`, `eval`, `screenshot`, `console`, `requests`. Save screenshots for every route change. Full command reference came from `playwright-cli --help` output: Core (open, attach, close, detach, goto, type, click, dblclick, fill, drag, drop, hover, select, upload, check, uncheck, snapshot, find, eval, dialog-accept, dialog-dismiss, resize, delete-data), Navigation (go-back, go-forward, reload), Keyboard (press, keydown, keyup), Mouse (mousemove, mousedown, mouseup, mousewheel), Save as (screenshot, pdf), Tabs (tab-list, tab-new, tab-close, tab-select), Storage (state-_, cookie-_, localstorage-_, sessionstorage-_), Network (requests, request, route, unroute, network-state-set), DevTools (console, run-code, recording-_, tracing-_, video-*), Install (install, install-browser), sessions (list, close-all, kill-all). Global options: `--help [command]`, `--json`, `--raw`, `--version`.
+- **Ask one question at a time during planning.** One answer can change the next question, so never batch planning questions.
+- **Button that looks like a link: use `Link` with `buttonVariants()`.** Example:
+  `<Link href="#" className={buttonVariants({ variant: "secondary", size: "sm" })}>Login</Link>`
+- **Static frontend only.** No admin panels, no backend, no server actions, no DB. This is a normal static portfolio site (`output: export`).
+- **Never use the em dash character anywhere** in code, copy, or docs. Use commas or hyphens instead.
+- **No duplicate text or info blocks in a single page.** Each fact appears once per page.
 
 ## Agent behavior
 
 - **Ask questions** when ambiguous or before destructive actions. Prefer one batched question.
 - **Update this file** when you discover non-obvious gotchas, fixes, or conventions.
-- **Use skills + MCPs** before writing code matching `prisma-*`, `next-*`, `better-auth-*`, `zod`, etc. Use `shadcn` MCP for component add/search/audit. Use `better-auth` MCP for auth docs.
+- **Use skills + MCPs** before writing code matching `next-*`, etc. Use `shadcn` MCP for component add/search/audit.
 
 ## Verification
 
 - **Primary**: `bun lint` - runs `next typegen && tsc --noEmit && eslint`
-- **Build gate**: `bun run build` - `prisma generate && next build`
-- **Full prod**: `bun prod` - `prisma generate && next build && next start` (before schema/env changes)
+- **Build gate**: `bun run build` - `next build` (static export to `out/`)
+- **Preview**: `bun run start` - serves `./out` on port 3000
+- **Browser check**: `playwright-cli` in `--headed` mode across `/`, `/projects`, `/projects/[slug]`, `/journey`, `/contact`, `/resume`, with screenshots per route
 
 ## Commands
 
 Development:
 
-- `bun install`; copy `.env.example` to `.env` (DISCORD_* optional locally)
-- `bun run migrate` after schema edits; `bun run db:seed` upserts profile data
-- `bun run dev` = plain Next dev (bot is send-only REST; no sidecar process); `bun run dev:web` is an alias
-- `bun studio` = Prisma Studio
+- `bun install`; the static site needs no `.env` (optional `NEXT_PUBLIC_SITE_URL` override)
+- `bun run dev` = plain Next dev
 
-Deploy (Turso + Render), one-time:
+Deploy (static hosting, e.g. Render Static Site):
 
-```sh
-turso db create portfolio
-turso db show portfolio --url        # DATABASE_URL
-turso db tokens create portfolio     # TURSO_AUTH_TOKEN
-DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:deploy
-DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." bun run db:seed
-```
-
-- Provision via the committed Blueprint (`render.yaml`): Dashboard -> New + -> Blueprint -> pick this repo (or apply through the Render MCP server / CLI - `.vscode/mcp.json` configures it)
-- Render env vars: DATABASE_URL, TURSO_AUTH_TOKEN, NEXT_PUBLIC_SITE_URL, BETTER_AUTH_URL, BETTER_AUTH_SECRET (generateValue in Blueprint), three optional DISCORD_*
-- Keep the Render region matched to the Turso DB location (every SSR request queries libSQL over the network)
-- Use Starter plan or above: Free instances sleep on idle (cold starts) and don't support preDeployCommand
-- Every push to main auto-deploys; `preDeployCommand: bunx prisma migrate deploy` runs migrations before the new instance takes traffic
-- `/api/health` is the liveness probe - keep it dependency-free (no DB touch) so DB blips can't fail deploys/false-positive rollbacks
+- Build command: `bun install && bun run build`; publish directory: `out`
+- Canonical URL: `https://jahid-ekbal-mallick.onrender.com` via `NEXT_PUBLIC_SITE_URL`
+- No migrations, no health endpoint, no server env vars. `render.yaml` was deleted with the backend.
 
 ## Project structure
 
 ```
 src/
-  app/              # App Router (layout.tsx, page.tsx, globals.css)
+  app/              # App Router (layout.tsx, sitemap.ts, robots.ts, opengraph-image.tsx)
+  app/(site)/       # Public pages: page.tsx (Home), projects, journey, contact, resume
   components/
-    Layout/         # Header, ThemeToggleButton
+    Layout/         # Header (static nav), Footer (static socials), ThemeToggleButton
     Providers/      # ThemeProvider (next-themes)
-    shadcnui/       # shadcn primitives (button.tsx, toast.tsx)
-  hooks/            # Custom hooks (currently empty)
+    shadcnui/       # shadcn primitives
+    profile.tsx     # Static profile content (edit here)
+    projects.tsx    # Static project content, 5 GitHub repos (edit here)
+    journey.tsx     # Static experience/education (edit here)
+    HomeHero.tsx    # Home hero with R3F canvas + portrait
+    Reveal.tsx      # Scroll fade+rise wrapper
+    Typewriter.tsx  # Hero role line
+    TiltCard.tsx    # Mouse tilt wrapper for cards
   lib/
-    dbClient/       # Prisma singleton with libSQL adapter
-    env/            # serverEnv.ts, clientEnv.ts (t3-env)
+    data.ts         # Static getters over the component content files
+    site.ts         # Site meta + navItems (Projects, Journey, Contact)
     fonts.ts        # next/font (Geist, Inter)
     types.ts        # LayoutProps
     utils.ts        # cn() helper (clsx + tailwind-merge)
-  server/           # API routes placeholder (empty)
-generated/prisma/   # Prisma client output (gitignored)
-public/uploads/     # User uploads (all files ignored except .gitkeep)
+    content.ts      # slugify/reading-time helpers
+public/
+  images/profile.jpg  # Home + resume portrait (replace the file to update)
+  uploads/            # User uploads (all files ignored except .gitkeep)
 ```
+
+Content rules: profile, projects, and journey content live directly in `src/components/{profile,projects,journey}.tsx`, per user choice. `src/lib/data.ts` only re-exports them behind the old getter names so pages stay thin. Contact shows GitHub, LinkedIn, X, Discord, WhatsApp, Telegram + email only (no YouTube, no Instagram). Home shows portrait + headline + about + resume button + skills only (no featured projects).
 
 ## Gitignore pattern: uploads
 
@@ -90,80 +98,11 @@ public/uploads/     # User uploads (all files ignored except .gitkeep)
 - **ESLint**: Locked at eslint@9.x until `eslint-plugin-react` ships v10 support. Do NOT bump.
 - **TypeScript**: Currently ^5.9. TS 7.0 (Go-native compiler) blocked until typescript-eslint API stabilizes (~Oct 2026). Do not migrate.
 
-## Form patterns
+## Removed systems (do not re-add without asking)
 
-Schemas in `src/lib/zodSchema.ts` - export both schema and `type X = z.infer<typeof xSchema>`.
-
-Components use `"use client"`, `react-hook-form` + `@hookform/resolvers/zod`, and shadcn primitives:
-
-```typescript
-const { handleSubmit, control, formState: { isSubmitting } } = useForm({
-  resolver: zodResolver(mySchema),
-  defaultValues: { ... },
-  mode: "all",
-});
-```
-
-Each field goes through `Controller`:
-
-```typescript
-<Controller
-  name="fieldName"
-  control={control}
-  render={({ field, fieldState }) => (
-    <Field data-invalid={fieldState.invalid}>
-      <FieldLabel htmlFor={field.name}>Label</FieldLabel>
-      <Input {...field} id={field.name} aria-invalid={fieldState.invalid} autoComplete="..." />
-      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-    </Field>
-  )}
-/>
-```
-
-Submit: `<form onSubmit={handleSubmit(handler)} noValidate>`. Button disabled while submitting with icon toggle.
-
-## Discord bot (send-only)
-
-No commands, no gateway, no webhook. The bot only SENDS: contact-form submissions are mirrored to the owner's DMs (+ optional log channel) via REST.
-
-- Kept: `src/server/discord/{env,rest,notify,types}.ts`. Deleted: all handlers/router/commands/verify/blogService, gateway sidecar, register script, `/api/discord/interactions` route.
-- Env shrunk to `DISCORD_BOT_TOKEN`, `DISCORD_OWNER_USER_ID`, `DISCORD_LOG_CHANNEL_ID` (all optional).
-- Contact DM delivery still uses `after()` from `next/server` (Node runtime; works unchanged on Render).
-- GitHub repo import moved out of Discord: `src/server/github/repoImport.ts` (`importProjectFromGitHub`), used by the admin projects page. Unauthenticated GitHub API = 60 req/hr; no token by design.
-- SQLite can't autoincrement non-id columns: `Post.seq` is allocated via `_max.seq + 1` in `src/server/actions/admin/posts.ts`.
-- Optional secrets in `serverEnv.ts` use a zod `preprocess` that maps empty strings to `undefined`.
+- Deleted for the static conversion: `src/app/admin/*`, `src/app/login`, `src/app/api/*`, `src/server/*`, `src/lib/auth*`, `src/lib/dbClient`, `src/lib/rateLimit.ts`, `src/lib/zodSchema.ts`, `src/lib/env`, `src/proxy.ts`, `prisma/*`, `prisma.config.ts`, backend `scripts/*`, `render.yaml`, `generated/*`, `src/components/admin/*`, `src/components/analytics/*`, `src/components/ContactForm.tsx`.
+- Removed deps: `better-auth`, `@better-auth/prisma-adapter`, `@prisma/client`, `@prisma/adapter-libsql`, `prisma`, `dotenv`, `recharts`.
 - Temp scripts using `@/` aliases MUST live inside the project dir; `bun -e` breaks on PowerShell `$` escaping - use a temp file instead.
-
-## Auth + admin dashboard
-
-- Better Auth 1.7 + `@better-auth/prisma-adapter` over the existing libsql-backed Prisma client. Instance: `src/lib/auth.ts` (`nextCookies()` LAST plugin); client: `src/lib/auth-client.ts`; mounted at `/api/auth/[...all]`.
-- Better Auth 1.7 REQUIRES an `issuer` column on Account (`local:credential` for passwords). The CLI schema generator missed it - it was added manually; keep it if regenerating.
-- LOGIN IS OTP-ONLY (since the password removal): `emailAndPassword.enabled:false`, official `emailOTP()` plugin. Code = 6 chars `[A-Z0-9]` w/ guaranteed mixed letter+digit via custom `generateOTP`; `expiresIn:180`s, hashed storage (`storeOTP:"hashed"`), `allowedAttempts:5`, plugin rate limit 3/min, `disableSignUp:true`. Delivery = `sendVerificationOTP` hook -> `src/server/auth/discordOtp.ts` -> owner DM (reuse send-only rest stack). Codes live in the EXISTING Verification table (identifier `${type}-otp-${email}`) - no new tables.
-- Server actions in `src/server/actions/login.ts`: `requestLoginCode()` (3 sends/10min/IP app limiter + 30s resend cooldown Map + config pre-check + auto-provision bare admin User row) and `verifyLoginCode()` (`auth.api.signInEmailOTP`; zod `^[A-Z0-9]{6}$` uppercased; ALL failures collapse to one generic message).
-- UI `src/components/admin/LoginForm.tsx`: single OTP input (`autoComplete="one-time-code"`, auto-uppercase, mono tracking), Send->Resend cooldown countdowns from server `cooldownMs`, expiry countdown from 180s TTL constant mirrored client-side.
-- Dashboard at `/admin/*`, never linked publicly, `noindex`, disallowed in robots.
-- Route protection layers: `src/proxy.ts` (Next 16 renamed middleware->proxy) does cookie-presence-only optimistic redirect for `/admin/*` ONLY (matcher `/admin/:path*`; deliberately NO `/login` rule - cookie presence ≠ validity and caused login↔admin loops with stale cookies). Authoritative checks: login PAGE redirects valid sessions to `/admin` via `auth.api.getSession({headers})`, `src/app/admin/layout.tsx` guards all `/admin/*`, and every server action in `src/server/actions/admin/*` starts with the guard helper `requireAdminSession()`.
-- Migrations: history squashed to a single baseline `20260826181414_init`. Turso/remote DBs provisioned from the OLD 6-migration history need a one-time drop+recreate (or clearing `_prisma_migrations`) before `db:deploy`. `bun run db:reset` wipes local data non-interactively (`prisma migrate reset --force`).
-- Seed creates the admin via `auth.api.signUpEmail`; credentials come from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, falling back to built-in defaults `admin@example.com`/`admin@example.com` when unset (seed warns loudly when defaulting, especially against remote `libsql://`). If the account exists but its hash does NOT match ADMIN_PASSWORD, the seeder probes with `auth.api.signInEmail`, deletes the user row (cascades Account/Session), and recreates it - `.env` always wins on re-seed. Throwaway sessions opened by these server-side auth calls are deleted so seeding leaves zero dangling sessions.
-- Public pages live under route group `src/app/(site)/` (Header/Footer chrome); root layout only has html/body/ThemeProvider/AnalyticsTracker so admin+login render clean.
-- typedRoutes is on: literal routes must exist after `next typegen`; dynamic/query-string URLs need `as Route` casts.
-
-## Visitor analytics (self-hosted)
-
-- Tracker: `src/components/analytics/AnalyticsTracker.tsx` in root layout - POSTs `/api/analytics/collect` per pathname change + dwell heartbeats/sendBeacon (~15s while visible).
-- Collector sets first-party cookies `vkey` (visitor id, 1y) and `vkey` session id `vsession` (30min sliding). Bots filtered by UA. Everyone tracked incl. admin.
-- Country: visitor IP (x-forwarded-for) resolved via ipwho.is then ip-api fallback, cached per-IP in `IpGeoCache`; loopback/private IPs store "Local".
-- Retention: sessions older than 90 days pruned probabilistically (~5% of collects).
-- Dashboard `/admin/analytics` (?range=7d|30d|90d): stat cards, daily bar chart (CSS bars, no chart lib runtime needed beyond recharts install), top countries/pages/referrers/devices tables, recent sessions with time spent.
-
-## Security posture
-
-- Security headers + CSP are centralized in `next.config.ts` (`headers()`): strict CSP (`default-src 'self'`, no frames/object), HSTS, XCTO, XFO DENY, Referrer-Policy, Permissions-Policy, `X-XSS-Protection: 0`. CSP keeps `'unsafe-inline'` for scripts/styles because Next ships inline bootstrap scripts/React inline styles and there is no nonce infrastructure at proxy level; `img-src https:` exists because admin-entered cover images point at arbitrary hosts. `poweredByHeader: false`; `serverActions.bodySizeLimit: "512kb"`.
-- Rate limiting layers: Better Auth core `{enabled:true, window:60, max:30}` in-memory plus its built-in special rule `POST /sign-in/email` = 3 req/10s (verified: burst returns 401,401,401,429…). App-level limiter `src/lib/rateLimit.ts` (fixed-window Map with GC sweep) guards contact action (5 msg/10min/IP) and analytics collect (30 pageviews & 60 dwell/min/IP; verified 429 tail). In-memory is correct for the single Render instance - if ever multi-instance, switch auth rateLimit storage to database.
-- `clientIpFromHeaders()` returns the RIGHTMOST `x-forwarded-for` token (appending proxies like Render add the true peer at the END; leftmost is client-spoofable). Matches Better Auth's own walk direction - do not "optimize" back to `[0]`.
-- Analytics collector hardening: 2KB body cap (413), JSON-parse guard, dwell has a 86,400s lifetime ceiling enforced in the updateMany WHERE, visitor/session cookies are `httpOnly` + `secure` in production.
-- XSS surface: blog/project markdown renders through `react-markdown` (raw HTML stripped by default) under the CSP above; admin inputs are zod-capped server-side even though forms validate client-side too. GitHub import fetches only `api.github.com` paths built from `[\w.-]+` capture groups (no SSRF).
-- Health endpoint stays dependency-free by design (deploy gate must never fail on DB blips).
 
 ## Git commits
 

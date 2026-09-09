@@ -9,6 +9,7 @@ export const size = {
 
 export const contentType = "image/png";
 export const alt = `${site.name} - ${site.role}`;
+export const dynamic = "force-static";
 
 export default function OgImage() {
   return new ImageResponse(

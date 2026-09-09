@@ -1,11 +1,15 @@
+import Link from "next/link";
+
 import ContactSocialGrid from "@/components/ContactSocialGrid";
+import Reveal from "@/components/Reveal";
+import { buttonVariants } from "@/components/shadcnui/button";
 import { Separator } from "@/components/shadcnui/separator";
 import { getProfile } from "@/lib/data";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Contact",
-  "Connect with me on social platforms — click a card to open, right-click or tap ••• for Copy link and QR.",
+  "Connect with me on social platforms. Open a card, copy a link, or scan a QR code.",
   "/contact",
 );
 
@@ -15,26 +19,38 @@ const ContactPage = async () => {
   return (
     <div className="mx-auto max-w-3xl px-6">
       <section className="py-16 sm:py-20">
-        <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
-          Connect
-        </h1>
-        <p className="text-muted-foreground mt-4 max-w-xl">
-          Find me on the platforms I use. Each card is square with the icon in
-          the center — click to open directly (desktop and phone), right-click
-          or use ••• (mobile) for Go to app, Copy link, or Show QR.
-        </p>
+        <Reveal>
+          <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
+            Connect
+          </h1>
+          <p className="text-muted-foreground mt-4 max-w-xl">
+            Find me on the platforms I use. Open a card to visit, or use the
+            menu on each card to copy the link or scan a QR code.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              prefetch={false}
+              href={`mailto:${profile.email}`}
+              className={buttonVariants({ variant: "secondary", size: "sm" })}>
+              Email me
+            </Link>
+            <Link
+              prefetch={false}
+              href="/projects"
+              className={buttonVariants({ variant: "outline", size: "sm" })}>
+              See my work
+            </Link>
+          </div>
+        </Reveal>
 
         <Separator className="my-8" />
 
-        <ContactSocialGrid
-          socials={profile?.socials ?? {}}
-          email={profile?.email}
-        />
-
-        <p className="text-muted-foreground mt-8 text-center text-xs">
-          Tip: Click a card to open directly. Right-click (desktop) or tap •••
-          (mobile) for Copy link and QR.
-        </p>
+        <Reveal delay={100}>
+          <ContactSocialGrid
+            socials={profile.socials}
+            email={profile.email}
+          />
+        </Reveal>
       </section>
     </div>
   );

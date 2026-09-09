@@ -7,12 +7,10 @@ import { QRCodeSVG } from "qrcode.react";
 import {
   DiscordIcon,
   GitHubIcon,
-  InstagramIcon,
   LinkedInIcon,
   TelegramIcon,
   WhatsAppIcon,
   XIcon,
-  YouTubeIcon,
 } from "@/components/icons";
 import { Card, CardContent } from "@/components/shadcnui/card";
 import {
@@ -68,18 +66,6 @@ export default function ContactSocialGrid({ socials, email }: Props) {
       Icon: LinkedInIcon,
     },
     { key: "twitter", label: "X", href: socials.twitter ?? "", Icon: XIcon },
-    {
-      key: "instagram",
-      label: "Instagram",
-      href: socials.instagram ?? "",
-      Icon: InstagramIcon,
-    },
-    {
-      key: "youtube",
-      label: "YouTube",
-      href: socials.youtube ?? "",
-      Icon: YouTubeIcon,
-    },
     {
       key: "discord",
       label: "Discord",
@@ -161,7 +147,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                       href={href}
                       target={isEmail ? undefined : "_blank"}
                       rel={isEmail ? undefined : "noopener noreferrer"}
-                      aria-label={`${label} — click to open, right-click for more options`}
+                      aria-label={`${label}, click to open, right-click for more options`}
                     />
                   }>
                   <Card className="hover:border-ring/50 aspect-square cursor-pointer p-0 transition-all select-none hover:shadow-md">
@@ -201,7 +187,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                 </ContextMenuContent>
               </ContextMenu>
 
-              {/* Mobile fallback: visible ••• button — same actions as context menu */}
+              {/* Mobile fallback: visible more button with the same actions as context menu */}
               <div className="absolute top-2 right-2 md:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger

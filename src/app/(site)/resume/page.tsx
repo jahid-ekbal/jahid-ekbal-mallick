@@ -1,10 +1,12 @@
+import Image from "next/image";
+
 import ResumePrintButton from "@/components/ResumePrintButton";
 import { getProfile } from "@/lib/data";
 import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
-  "Résumé",
-  `Résumé of ${site.name}, full-stack developer and UI/UX designer.`,
+  "Resume",
+  `Resume of ${site.name}, full-stack developer and UI/UX designer.`,
   "/resume",
 );
 
@@ -12,33 +14,39 @@ const socialLabels: Record<string, string> = {
   github: "GitHub",
   linkedin: "LinkedIn",
   twitter: "X",
-  instagram: "Instagram",
-  youtube: "YouTube",
   discord: "Discord",
   whatsapp: "WhatsApp",
   telegram: "Telegram",
-  signal: "Signal",
 };
 
 const ResumePage = async () => {
   const profile = await getProfile();
-  if (!profile) return null;
 
   const socialEntries = Object.entries(profile.socials).filter(
-    (entry): entry is [string, string] => Boolean(entry[1]),
+    (entry): entry is [string, string] =>
+      Boolean(entry[1]) && entry[0] in socialLabels,
   );
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16 print:max-w-none print:px-0 print:py-0">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-3xl font-semibold tracking-tight print:text-2xl">
-            {profile.name}
-          </h1>
-          <p className="text-muted-foreground mt-1">{profile.headline}</p>
-          <p className="text-muted-foreground mt-1 text-sm print:text-xs">
-            {profile.location} | {site.url.replace(/^https?:\/\//, "")}
-          </p>
+        <div className="flex items-center gap-4">
+          <Image
+            src={profile.avatar}
+            alt={`Portrait of ${profile.name}`}
+            width={72}
+            height={72}
+            className="size-16 rounded-full border object-cover print:size-12"
+          />
+          <div>
+            <h1 className="font-heading text-3xl font-semibold tracking-tight print:text-2xl">
+              {profile.name}
+            </h1>
+            <p className="text-muted-foreground mt-1">{profile.headline}</p>
+            <p className="text-muted-foreground mt-1 text-sm print:text-xs">
+              {profile.location} | {profile.email}
+            </p>
+          </div>
         </div>
         <ResumePrintButton />
       </div>

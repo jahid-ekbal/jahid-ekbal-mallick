@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 
 import ProjectCard from "@/components/ProjectCard";
+import Reveal from "@/components/Reveal";
+import TiltCard from "@/components/TiltCard";
 import type { Project } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -41,11 +43,14 @@ const ProjectsGrid = ({ projects }: { projects: Project[] }) => {
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {visible.map((project) => (
-          <ProjectCard
+        {visible.map((project, i) => (
+          <Reveal
             key={project.slug}
-            project={project}
-          />
+            delay={(i % 6) * 60}>
+            <TiltCard>
+              <ProjectCard project={project} />
+            </TiltCard>
+          </Reveal>
         ))}
       </div>
 

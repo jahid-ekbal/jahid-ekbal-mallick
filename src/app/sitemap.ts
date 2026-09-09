@@ -1,18 +1,17 @@
 import type { MetadataRoute } from "next";
 
-import { getAllProjects } from "@/lib/data";
+import { projects } from "@/components/projects";
 import { site } from "@/lib/site";
 
-export const revalidate = 3600;
+export const dynamic = "force-static";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const projects = await getAllProjects();
-
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/projects",
     "/journey",
     "/contact",
+    "/resume",
   ].map((path) => ({
     url: `${site.url}${path}`,
     lastModified: new Date(),

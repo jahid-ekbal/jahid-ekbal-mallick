@@ -20,6 +20,7 @@ const Header = () => {
     <header className="border-border/60 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <Link
+          prefetch={false}
           href={"/"}
           className="text-sm font-semibold tracking-tight"
           onClick={() => setOpen(false)}>
@@ -31,6 +32,7 @@ const Header = () => {
           aria-label="Primary">
           {navItems.map((item) => (
             <Link
+              prefetch={false}
               key={item.href}
               href={item.href}
               className={cn(
@@ -92,6 +94,7 @@ const Header = () => {
           <div className="mx-auto flex max-w-5xl flex-col px-6 py-3">
             {navItems.map((item) => (
               <Link
+                prefetch={false}
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
