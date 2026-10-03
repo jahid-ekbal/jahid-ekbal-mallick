@@ -26,7 +26,7 @@ const ResumePage = () => {
   );
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16 print:max-w-none print:px-0 print:py-0">
+    <div className="mx-auto max-w-5xl px-6 py-14 sm:py-16 print:max-w-none print:px-0 print:py-0">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
           <Image

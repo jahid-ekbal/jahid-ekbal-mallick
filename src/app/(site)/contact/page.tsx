@@ -17,8 +17,8 @@ const ContactPage = () => {
   const profile = getProfile();
 
   return (
-    <div className="mx-auto max-w-3xl px-6">
-      <section className="py-16 sm:py-20">
+    <div className="mx-auto max-w-5xl px-6">
+      <section className="min-h-[70svh] py-14 sm:py-16">
         <Reveal>
           <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
             Connect

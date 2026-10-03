@@ -16,8 +16,8 @@ const Journey = () => {
   const profile = getProfile();
 
   return (
-    <div className="mx-auto max-w-3xl px-6">
-      <section className="py-16 sm:py-20">
+    <div className="mx-auto max-w-5xl px-6">
+      <section className="min-h-[70svh] py-14 sm:py-16">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>

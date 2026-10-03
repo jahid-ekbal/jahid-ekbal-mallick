@@ -46,8 +46,8 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
   if (!project) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-6">
-      <section className="py-16 sm:py-20">
+    <div className="mx-auto max-w-5xl px-6">
+      <section className="min-h-[70svh] py-14 sm:py-16">
         <Link
           href="/projects"
           prefetch={false}
