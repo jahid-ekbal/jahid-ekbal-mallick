@@ -58,7 +58,7 @@ const RootLayout = ({ children }: LayoutProps) => {
       lang="en"
       className={cn("antialiased", geistSans.variable, geistMono.variable)}
       suppressHydrationWarning>
-      <body className="flex min-h-dvh flex-col print:bg-white print:text-black print:[color-scheme:light]">
+      <body className="flex min-h-dvh flex-col print:bg-white print:text-black print:scheme-light">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
