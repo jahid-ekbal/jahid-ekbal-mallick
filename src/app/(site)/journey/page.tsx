@@ -1,20 +1,19 @@
 import Link from "next/link";
-import { FileDown, GraduationCap, Briefcase } from "lucide-react";
+import { FileDown, GraduationCap } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { buttonVariants } from "@/components/shadcnui/button";
-import { Separator } from "@/components/shadcnui/separator";
 import { getProfile } from "@/lib/data";
 import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Journey",
-  `Career, education and milestones of ${site.name}.`,
+  `Education and milestones of ${site.name}.`,
   "/journey",
 );
 
-const Journey = async () => {
-  const profile = await getProfile();
+const Journey = () => {
+  const profile = getProfile();
 
   return (
     <div className="mx-auto max-w-3xl px-6">
@@ -26,7 +25,7 @@ const Journey = async () => {
                 Journey
               </h1>
               <p className="text-muted-foreground mt-3 max-w-xl">
-                Roles, education and the path that shaped how I build.
+                Education and the path that shaped how I build.
               </p>
             </div>
             <Link
@@ -41,53 +40,6 @@ const Journey = async () => {
 
         <Reveal delay={80}>
           <div className="mt-12">
-            <div className="flex items-center gap-2">
-              <Briefcase
-                size={18}
-                className="text-muted-foreground"
-              />
-              <h2 className="font-heading text-lg font-semibold tracking-tight">
-                Experience
-              </h2>
-            </div>
-            {profile.experiences.length > 0 ?
-              <ol className="border-border relative mt-6 space-y-10 border-l pl-8">
-                {profile.experiences.map((exp) => (
-                  <li
-                    key={`${exp.role}-${exp.company}`}
-                    className="relative">
-                    <span
-                      className="border-background bg-foreground/70 absolute top-1.5 -left-[37px] size-2.5 rounded-full border-2"
-                      aria-hidden
-                    />
-                    <span className="text-muted-foreground font-mono text-xs">
-                      {exp.period}
-                    </span>
-                    <h3 className="font-heading mt-1.5 text-base font-semibold tracking-tight">
-                      {exp.role}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {exp.company}
-                    </p>
-                    {exp.description && (
-                      <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-relaxed">
-                        {exp.description}
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            : <p className="text-muted-foreground mt-6 text-sm">
-                Experience coming soon.
-              </p>
-            }
-          </div>
-        </Reveal>
-
-        <Separator className="my-12" />
-
-        <Reveal delay={80}>
-          <div>
             <div className="flex items-center gap-2">
               <GraduationCap
                 size={18}

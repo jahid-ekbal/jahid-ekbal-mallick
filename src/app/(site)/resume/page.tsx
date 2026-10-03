@@ -15,12 +15,10 @@ const socialLabels: Record<string, string> = {
   linkedin: "LinkedIn",
   twitter: "X",
   discord: "Discord",
-  whatsapp: "WhatsApp",
-  telegram: "Telegram",
 };
 
-const ResumePage = async () => {
-  const profile = await getProfile();
+const ResumePage = () => {
+  const profile = getProfile();
 
   const socialEntries = Object.entries(profile.socials).filter(
     (entry): entry is [string, string] =>
@@ -56,7 +54,9 @@ const ResumePage = async () => {
           Summary
         </h2>
         <p className="text-muted-foreground mt-3 text-sm leading-relaxed print:text-xs">
-          {profile.bio.split("\n\n")[0]}
+          Full-Stack Developer and Digital Creator from Kolkata, India, building
+          responsive web apps and visual content with React, Next.js, and
+          TypeScript.
         </p>
       </section>
 
@@ -96,33 +96,6 @@ const ResumePage = async () => {
               </div>
             ))}
           </dl>
-        </section>
-      )}
-
-      {profile.experiences.length > 0 && (
-        <section className="mt-6 print:mt-4">
-          <h2 className="border-border border-b pb-1 text-sm font-semibold tracking-wide uppercase print:text-xs">
-            Experience
-          </h2>
-          <ol className="mt-3 space-y-4">
-            {profile.experiences.map((exp) => (
-              <li key={`${exp.role}-${exp.company}`}>
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="text-sm font-medium print:text-xs">
-                    {exp.role} | {exp.company}
-                  </h3>
-                  <span className="text-muted-foreground font-mono text-xs">
-                    {exp.period}
-                  </span>
-                </div>
-                {exp.description && (
-                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed print:text-xs">
-                    {exp.description}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ol>
         </section>
       )}
 

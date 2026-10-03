@@ -6,6 +6,7 @@ import { site } from "@/lib/site";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const lastModified = new Date("2026-01-01");
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/projects",
@@ -14,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/resume",
   ].map((path) => ({
     url: `${site.url}${path}`,
-    lastModified: new Date(),
+    lastModified,
     changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.7,
   }));
@@ -23,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticRoutes,
     ...projects.map((project) => ({
       url: `${site.url}/projects/${project.slug}`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),

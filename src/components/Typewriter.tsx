@@ -10,22 +10,26 @@ const roles = [
 ];
 
 export default function Typewriter() {
-  const [reduced] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  const [text, setText] = useState(() => (reduced ? roles[0] : ""));
+  const [mounted, setMounted] = useState(false);
+  const [reduced, setReduced] = useState(false);
+  const [text, setText] = useState("");
   const [index, setIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (reduced) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || reduced) return;
     const current = roles[index % roles.length];
     const speed = deleting ? 32 : 64;
+    let inner: ReturnType<typeof setTimeout> | undefined;
     const timer = setTimeout(() => {
       if (!deleting && text === current) {
-        setTimeout(() => setDeleting(true), 1400);
+        inner = setTimeout(() => setDeleting(true), 1400);
         return;
       }
       if (deleting && text === "") {
@@ -39,16 +43,24 @@ export default function Typewriter() {
         : current.slice(0, text.length + 1),
       );
     }, speed);
-    return () => clearTimeout(timer);
-  }, [text, index, deleting, reduced]);
+    return () => {
+      clearTimeout(timer);
+      if (inner) clearTimeout(inner);
+    };
+  }, [text, index, deleting, reduced, mounted]);
+
+  const display = !mounted || reduced ? roles[0] : text;
 
   return (
-    <span aria-live="polite">
-      {text}
-      <span
-        aria-hidden
-        className="animate-pulse">
-        |
+    <span aria-live="off">
+      <span className="sr-only">{roles[index % roles.length]}</span>
+      <span aria-hidden>
+        {display}
+        <span
+          aria-hidden
+          className="animate-pulse">
+          |
+        </span>
       </span>
     </span>
   );

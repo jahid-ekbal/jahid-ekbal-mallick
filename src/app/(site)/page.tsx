@@ -8,7 +8,7 @@ import { getProfile } from "@/lib/data";
 import { site } from "@/lib/site";
 
 const Home = async () => {
-  const profile = await getProfile();
+  const profile = getProfile();
 
   const jsonLd = {
     "@context": "https://schema.org",

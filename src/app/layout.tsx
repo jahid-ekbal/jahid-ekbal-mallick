@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import ThemeProvider from "@/components/Providers/ThemeProvider";
-import { Toaster } from "@/components/shadcnui/toast";
-import { geistMono, geistSans, interHeading } from "@/lib/fonts";
+import { geistMono, geistSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { LayoutProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -43,11 +42,13 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: site.title,
     description: site.description,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: site.title,
     description: site.description,
+    images: ["/opengraph-image"],
   },
 };
 
@@ -55,20 +56,14 @@ const RootLayout = ({ children }: LayoutProps) => {
   return (
     <html
       lang="en"
-      className={cn(
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        interHeading.variable,
-      )}
+      className={cn("antialiased", geistSans.variable, geistMono.variable)}
       suppressHydrationWarning>
-      <body className="flex min-h-dvh flex-col">
+      <body className="flex min-h-dvh flex-col print:bg-white print:text-black print:[color-scheme:light]">
         <ThemeProvider
-          attribute={"class"}
-          defaultTheme="dark"
-          enableSystem={false}>
+          attribute="class"
+          defaultTheme="system"
+          enableSystem>
           {children}
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

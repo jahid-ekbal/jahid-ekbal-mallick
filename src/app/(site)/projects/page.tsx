@@ -9,8 +9,8 @@ export const metadata = pageMetadata(
   "/projects",
 );
 
-const ProjectsPage = async () => {
-  const projects = await getAllProjects();
+const ProjectsPage = () => {
+  const projects = getAllProjects();
 
   return (
     <div className="mx-auto max-w-5xl px-6">

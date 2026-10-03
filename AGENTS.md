@@ -8,26 +8,25 @@ This version has breaking changes - APIs, conventions, and file structure may al
 
 ## Stack
 
-| Pkg           | Ver                | Note                                                                             |
-| ------------- | ------------------ | -------------------------------------------------------------------------------- |
-| Next.js       | ^16.2              | `reactCompiler: true`, `typedRoutes: true`, `output: export` (static, no server) |
-| React         | ^19.2              |                                                                                  |
-| TypeScript    | ^5.9               | strict, ESNext module, bundler resolution                                        |
-| R3F / three   | ^9.7 / ^0.186      | Home hero 3D canvas only, with reduced-motion fallback                           |
-| shadcn/ui     | base-vega style    | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`     |
-| Base UI React | ^1.6               | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)         |
-| Tailwind CSS  | ^4.3               | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`           |
-| Zod           | ^4.4               | Kept as dep, no active schemas (static site, nothing posts to a server)          |
-| env           | @t3-oss/env-nextjs | Kept as dep, unused at runtime (only `NEXT_PUBLIC_SITE_URL` via `process.env`)   |
+| Pkg           | Ver             | Note                                                                             |
+| ------------- | --------------- | -------------------------------------------------------------------------------- |
+| Next.js       | ^16.2           | `reactCompiler: true`, `typedRoutes: true`, `output: export` (static, no server) |
+| React         | ^19.2           |                                                                                  |
+| TypeScript    | ^5.9            | strict, ESNext module, bundler resolution                                        |
+| shadcn/ui     | base-vega style | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`     |
+| Base UI React | ^1.6            | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)         |
+| Tailwind CSS  | ^4.3            | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`           |
 
 Path aliases: `@/*` → `./src/*`.
 
 ## Standing user rules (do not drop)
 
-- **Verification uses `playwright-cli` only, always in `--headed` mode.** Run `playwright-cli --help` to see all commands. Core flow: `open --headed <url>`, `goto`, `snapshot`, `find`, `click`, `fill`, `eval`, `screenshot`, `console`, `requests`. Save screenshots for every route change. Full command reference came from `playwright-cli --help` output: Core (open, attach, close, detach, goto, type, click, dblclick, fill, drag, drop, hover, select, upload, check, uncheck, snapshot, find, eval, dialog-accept, dialog-dismiss, resize, delete-data), Navigation (go-back, go-forward, reload), Keyboard (press, keydown, keyup), Mouse (mousemove, mousedown, mouseup, mousewheel), Save as (screenshot, pdf), Tabs (tab-list, tab-new, tab-close, tab-select), Storage (state-_, cookie-_, localstorage-_, sessionstorage-_), Network (requests, request, route, unroute, network-state-set), DevTools (console, run-code, recording-_, tracing-_, video-*), Install (install, install-browser), sessions (list, close-all, kill-all). Global options: `--help [command]`, `--json`, `--raw`, `--version`.
-- **Ask one question at a time during planning.** One answer can change the next question, so never batch planning questions.
+- **Verification uses `playwright-cli` only, always in `--headed` mode.** On this Windows setup the working binary is `npx --yes playwright cli`, bare `playwright-cli` is not on PATH. Run `npx --yes playwright cli --help` to see all commands. Core flow: `open --headed <url>`, `goto`, `snapshot`, `find`, `click`, `fill`, `eval`, `screenshot`, `console`, `requests`. Save screenshots for every route change. Full command reference came from `playwright-cli --help` output: Core (open, attach, close, detach, goto, type, click, dblclick, fill, drag, drop, hover, select, upload, check, uncheck, snapshot, find, eval, dialog-accept, dialog-dismiss, resize, delete-data), Navigation (go-back, go-forward, reload), Keyboard (press, keydown, keyup), Mouse (mousemove, mousedown, mouseup, mousewheel), Save as (screenshot, pdf), Tabs (tab-list, tab-new, tab-close, tab-select), Storage (state-_, cookie-_, localstorage-_, sessionstorage-_), Network (requests, request, route, unroute, network-state-set), DevTools (console, run-code, recording-_, tracing-_, video-*), Install (install, install-browser), sessions (list, close-all, kill-all). Global options: `--help [command]`, `--json`, `--raw`, `--version`.
+- **Ask one question at a time during planning.** One answer can change the next question, so never batch planning questions. This rule stays active across turns until the user lifts it.
 - **Button that looks like a link: use `Link` with `buttonVariants()`.** Example:
   `<Link href="#" className={buttonVariants({ variant: "secondary", size: "sm" })}>Login</Link>`
+- **Always remove all test data after test complete.** Delete temp files, screenshots, coverage, and any fixture output.
+- **Always remove `playwright-cli` test data after complete test.** Delete `.playwright-cli/` in the repo and any screenshots in `%LOCALAPPDATA%/Temp/opencode/`. Then close the browser with `close`.
 - **Static frontend only.** No admin panels, no backend, no server actions, no DB. This is a normal static portfolio site (`output: export`).
 - **Never use the em dash character anywhere** in code, copy, or docs. Use commas or hyphens instead.
 - **No duplicate text or info blocks in a single page.** Each fact appears once per page.
@@ -71,17 +70,15 @@ src/
     profile.tsx     # Static profile content (edit here)
     projects.tsx    # Static project content, 5 GitHub repos (edit here)
     journey.tsx     # Static experience/education (edit here)
-    HomeHero.tsx    # Home hero with R3F canvas + portrait
-    Reveal.tsx      # Scroll fade+rise wrapper
-    Typewriter.tsx  # Hero role line
-    TiltCard.tsx    # Mouse tilt wrapper for cards
+    HomeHero.tsx    # Home hero with gradient plus accents + portrait, no WebGL
+    Reveal.tsx      # Scroll fade+rise wrapper, visible by default, no-JS safe
+    Typewriter.tsx  # Hero role line, reduced-motion safe, no live region noise
   lib/
-    data.ts         # Static getters over the component content files
-    site.ts         # Site meta + navItems (Projects, Journey, Contact)
-    fonts.ts        # next/font (Geist, Inter)
+    data.ts         # Static sync getters over the component content files
+    site.ts         # Site meta + navItems (Projects, Journey, Contact, Resume)
+    fonts.ts        # next/font (Geist Sans, Geist Mono)
     types.ts        # LayoutProps
     utils.ts        # cn() helper (clsx + tailwind-merge)
-    content.ts      # slugify/reading-time helpers
 public/
   images/profile.jpg  # Home + resume portrait (replace the file to update)
   uploads/            # User uploads (all files ignored except .gitkeep)
@@ -101,7 +98,7 @@ Content rules: profile, projects, and journey content live directly in `src/comp
 ## Removed systems (do not re-add without asking)
 
 - Deleted for the static conversion: `src/app/admin/*`, `src/app/login`, `src/app/api/*`, `src/server/*`, `src/lib/auth*`, `src/lib/dbClient`, `src/lib/rateLimit.ts`, `src/lib/zodSchema.ts`, `src/lib/env`, `src/proxy.ts`, `prisma/*`, `prisma.config.ts`, backend `scripts/*`, `render.yaml`, `generated/*`, `src/components/admin/*`, `src/components/analytics/*`, `src/components/ContactForm.tsx`.
-- Removed deps: `better-auth`, `@better-auth/prisma-adapter`, `@prisma/client`, `@prisma/adapter-libsql`, `prisma`, `dotenv`, `recharts`.
+- Removed deps: `better-auth`, `@better-auth/prisma-adapter`, `@prisma/client`, `@prisma/adapter-libsql`, `prisma`, `dotenv`, `recharts`, `@react-three/fiber`, `three`, `@types/three`, `react-markdown`, `remark-gfm`, `react-hook-form`, `@hookform/resolvers`, `zod`, `@t3-oss/env-nextjs`, `sharp`, `shadcn`.
 - Temp scripts using `@/` aliases MUST live inside the project dir; `bun -e` breaks on PowerShell `$` escaping - use a temp file instead.
 
 ## Git commits

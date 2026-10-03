@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Copy, Mail, MoreVertical, QrCode } from "lucide-react";
+import { ArrowUpRight, Copy, Mail, QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 import {
@@ -27,13 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/shadcnui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/shadcnui/dropdown-menu";
 import { toast } from "@/components/shadcnui/toast";
 import type { Socials } from "@/lib/data";
 
@@ -41,7 +34,12 @@ type SocialEntry = {
   key: keyof Socials | "email";
   label: string;
   href: string;
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  Icon: React.ComponentType<{
+    width?: number;
+    height?: number;
+    className?: string;
+    size?: number;
+  }>;
 };
 
 type Props = {
@@ -91,9 +89,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
       key: "email",
       label: "Email",
       href: `mailto:${email}`,
-      Icon: Mail as unknown as React.ComponentType<
-        React.SVGProps<SVGSVGElement>
-      >,
+      Icon: Mail,
     });
   }
 
@@ -107,7 +103,16 @@ export default function ContactSocialGrid({ socials, email }: Props) {
 
   const handleCopy = async (href: string, label: string) => {
     try {
-      await navigator.clipboard.writeText(href);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(href);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = href;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
       toast.add({
         type: "success",
         title: "Copied",
@@ -136,9 +141,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
         {entries.map(({ key, label, href, Icon }) => {
           const isEmail = href.startsWith("mailto:");
           return (
-            <div
-              key={key}
-              className="group relative">
+            <div key={key}>
               <ContextMenu>
                 <ContextMenuTrigger
                   className="focus-visible:ring-ring block rounded-xl focus-visible:ring-2 focus-visible:outline-none"
@@ -186,35 +189,6 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                   </ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
-
-              {/* Mobile fallback: visible more button with the same actions as context menu */}
-              <div className="absolute top-2 right-2 md:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    aria-label={`More options for ${label}`}
-                    className="bg-background/80 border-border text-muted-foreground hover:text-foreground hover:bg-accent focus-visible:ring-ring inline-flex size-7 items-center justify-center rounded-md border shadow-sm backdrop-blur-sm focus-visible:ring-2 focus-visible:outline-none"
-                    onClick={(e) => e.stopPropagation()}>
-                    <MoreVertical className="size-3.5" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-48">
-                    <DropdownMenuItem onClick={() => handleGo(href)}>
-                      Go to {label}
-                      <ArrowUpRight className="ml-auto" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleCopy(href, label)}>
-                      Copy link
-                      <Copy className="ml-auto" />
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setQr({ href, label })}>
-                      Show QR
-                      <QrCode className="ml-auto" />
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
             </div>
           );
         })}

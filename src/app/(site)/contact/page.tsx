@@ -13,8 +13,8 @@ export const metadata = pageMetadata(
   "/contact",
 );
 
-const ContactPage = async () => {
-  const profile = await getProfile();
+const ContactPage = () => {
+  const profile = getProfile();
 
   return (
     <div className="mx-auto max-w-3xl px-6">

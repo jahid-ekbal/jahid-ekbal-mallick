@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import ThemeToggleButton from "@/components/Layout/ThemeToggleButton";
@@ -12,9 +12,22 @@ import { cn } from "@/lib/utils";
 const Header = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    navRef.current?.querySelector("a")?.focus();
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header className="border-border/60 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md print:hidden">
@@ -35,6 +48,7 @@ const Header = () => {
               prefetch={false}
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
                 "rounded-md px-3 py-1.5 text-sm transition-colors",
                 isActive(item.href) ? "text-foreground" : (
@@ -88,6 +102,7 @@ const Header = () => {
 
       {open && (
         <nav
+          ref={navRef}
           id="mobile-nav"
           aria-label="Mobile"
           className="border-border/60 bg-background border-t md:hidden">
@@ -98,6 +113,7 @@ const Header = () => {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={cn(
                   "rounded-md px-3 py-2.5 text-sm transition-colors",
                   isActive(item.href) ? "text-foreground" : (

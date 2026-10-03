@@ -3,15 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
-import Markdown from "@/components/Markdown";
 import Reveal from "@/components/Reveal";
-import TiltCard from "@/components/TiltCard";
 import { GitHubIcon } from "@/components/icons";
 import { buttonVariants } from "@/components/shadcnui/button";
 import { getAllProjects, getProjectBySlug } from "@/lib/data";
 
-export async function generateStaticParams() {
-  const projects = await getAllProjects();
+export function generateStaticParams() {
+  const projects = getAllProjects();
   return projects.map((project) => ({ slug: project.slug }));
 }
 
@@ -19,7 +17,7 @@ export async function generateMetadata(
   props: PageProps<"/projects/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const project = await getProjectBySlug(slug);
+  const project = getProjectBySlug(slug);
   if (!project) return {};
 
   return {
@@ -31,18 +29,20 @@ export async function generateMetadata(
       description: project.summary,
       type: "article",
       url: `/projects/${project.slug}`,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.summary,
+      images: ["/opengraph-image"],
     },
   };
 }
 
 const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
   const { slug } = await props.params;
-  const project = await getProjectBySlug(slug);
+  const project = getProjectBySlug(slug);
   if (!project) notFound();
 
   return (
@@ -112,14 +112,22 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
           </ul>
         )}
 
-        <TiltCard className="border-border bg-muted relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-xl border">
+        <div className="border-border bg-muted relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-xl border">
           <span className="font-heading text-foreground/15 absolute inset-0 grid place-items-center text-5xl font-semibold select-none">
             {project.title.charAt(0)}
           </span>
-        </TiltCard>
+        </div>
 
         <article className="border-border mt-12 border-t pt-10">
-          <Markdown>{project.description}</Markdown>
+          <div className="space-y-4">
+            {project.description.split("\n\n").map((paragraph, i) => (
+              <p
+                key={i}
+                className="text-muted-foreground leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
         </article>
       </section>
     </div>

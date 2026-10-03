@@ -16,6 +16,7 @@ export const navItems = [
   { href: "/projects", label: "Projects" },
   { href: "/journey", label: "Journey" },
   { href: "/contact", label: "Contact" },
+  { href: "/resume", label: "Resume" },
 ] as const;
 
 export const pageMetadata = (
@@ -32,10 +33,12 @@ export const pageMetadata = (
     siteName: site.name,
     title,
     description,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
+    images: ["/opengraph-image"],
   },
 });

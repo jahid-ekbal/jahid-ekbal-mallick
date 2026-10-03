@@ -20,18 +20,21 @@ export type {
   Socials,
 };
 
-export const getProfile = async (): Promise<
-  Profile & {
-    experiences: ExperienceItem[];
-    education: EducationItem[];
-  }
-> => ({
-  ...profile,
-  experiences,
-  education,
-});
+export function getProfile(): Profile & {
+  experiences: ExperienceItem[];
+  education: EducationItem[];
+} {
+  return {
+    ...profile,
+    experiences,
+    education,
+  };
+}
 
-export const getAllProjects = async (): Promise<Project[]> => projects;
+export function getAllProjects(): Project[] {
+  return projects;
+}
 
-export const getProjectBySlug = async (slug: string): Promise<Project | null> =>
-  projects.find((p) => p.slug === slug) ?? null;
+export function getProjectBySlug(slug: string): Project | null {
+  return projects.find((p) => p.slug === slug) ?? null;
+}

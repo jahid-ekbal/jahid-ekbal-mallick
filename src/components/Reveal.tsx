@@ -14,16 +14,21 @@ export default function Reveal({
   delay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (visible) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisible(true);
+      return;
+    }
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      setVisible(true);
+      return;
+    }
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -33,19 +38,21 @@ export default function Reveal({
           }
         });
       },
-      { threshold: 0.12 },
+      { threshold: 0.12, rootMargin: "0px 0px -10% 0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [visible]);
+  }, []);
+
+  const show = !mounted || visible;
 
   return (
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
       className={cn(
-        "transition-all duration-700 ease-out will-change-transform",
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+        "transition-all duration-700 ease-out",
+        show ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
         className,
       )}>
       {children}
