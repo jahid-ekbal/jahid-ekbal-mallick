@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "bunx serve ./out -l 3000",
-    "lint": "next typegen && tsc --noEmit && eslint"
+    "start": "next start",
+    "lint": "eslint && echo \"✓ Lint passed\"",
+    "lint:check": "next typegen && tsc --noEmit && echo \"✓ Type check passed\" && eslint && echo \"✓ Lint passed\""
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
