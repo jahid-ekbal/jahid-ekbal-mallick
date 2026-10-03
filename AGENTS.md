@@ -8,14 +8,14 @@ This version has breaking changes - APIs, conventions, and file structure may al
 
 ## Stack
 
-| Pkg           | Ver             | Note                                                                             |
-| ------------- | --------------- | -------------------------------------------------------------------------------- |
-| Next.js       | ^16.2           | `reactCompiler: true`, `typedRoutes: true`, `output: export` (static, no server) |
-| React         | ^19.2           |                                                                                  |
-| TypeScript    | ^5.9            | strict, ESNext module, bundler resolution                                        |
-| shadcn/ui     | base-vega style | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`     |
-| Base UI React | ^1.6            | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)         |
-| Tailwind CSS  | ^4.3            | `@tailwindcss/postcss` plugin, `tw-animate-css`, `shadcn/tailwind.css`           |
+| Pkg           | Ver             | Note                                                                                          |
+| ------------- | --------------- | --------------------------------------------------------------------------------------------- |
+| Next.js       | ^16.2           | `reactCompiler: true`, `typedRoutes: true`, `output: export` (static, no server)              |
+| React         | ^19.2           |                                                                                               |
+| TypeScript    | ^5.9            | strict, ESNext module, bundler resolution                                                     |
+| shadcn/ui     | base-vega style | Components in `src/components/shadcnui/`. Aliased as `@/components/shadcnui`                  |
+| Base UI React | ^1.6            | Primitive provider for shadcn components (e.g., `@base-ui/react/button`)                      |
+| Tailwind CSS  | ^4.3            | `@tailwindcss/postcss` plugin, `tw-animate-css`, data-state variants inlined in `globals.css` |
 
 Path aliases: `@/*` → `./src/*`.
 

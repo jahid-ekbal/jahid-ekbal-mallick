@@ -28,12 +28,11 @@ const ContactPage = () => {
             menu on each card to copy the link or scan a QR code.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              prefetch={false}
+            <a
               href={`mailto:${profile.email}`}
               className={buttonVariants({ variant: "secondary", size: "sm" })}>
               Email me
-            </Link>
+            </a>
             <Link
               prefetch={false}
               href="/projects"
