@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "bunx serve ./out -l 3000",
+    "start": "bunx serve ./out -l 1000",
     "lint": "eslint && echo \"✓ Lint passed\"",
     "lint:check": "next typegen && tsc --noEmit && echo \"✓ Type check passed\" && eslint && echo \"✓ Lint passed\""
   },
