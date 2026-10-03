@@ -55,7 +55,7 @@ Deploy (static hosting, e.g. Render Static Site):
 
 - Build command: `bun install && bun run build`; publish directory: `out`
 - Canonical URL: `https://jahid-ekbal-mallick.onrender.com` via `NEXT_PUBLIC_SITE_URL`
-- No migrations, no health endpoint, no server env vars. `render.yaml` was deleted with the backend.
+- No migrations, no health endpoint, no server env vars. `render.yaml` holds the static site Blueprint (build plus publish `out`), auto deploys on push.
 
 ## Project structure
 
@@ -97,7 +97,7 @@ Content rules: profile, projects, and journey content live directly in `src/comp
 
 ## Removed systems (do not re-add without asking)
 
-- Deleted for the static conversion: `src/app/admin/*`, `src/app/login`, `src/app/api/*`, `src/server/*`, `src/lib/auth*`, `src/lib/dbClient`, `src/lib/rateLimit.ts`, `src/lib/zodSchema.ts`, `src/lib/env`, `src/proxy.ts`, `prisma/*`, `prisma.config.ts`, backend `scripts/*`, `render.yaml`, `generated/*`, `src/components/admin/*`, `src/components/analytics/*`, `src/components/ContactForm.tsx`.
+- Deleted for the static conversion: `src/app/admin/*`, `src/app/login`, `src/app/api/*`, `src/server/*`, `src/lib/auth*`, `src/lib/dbClient`, `src/lib/rateLimit.ts`, `src/lib/zodSchema.ts`, `src/lib/env`, `src/proxy.ts`, `prisma/*`, `prisma.config.ts`, backend `scripts/*`, `generated/*`, `src/components/admin/*`, `src/components/analytics/*`, `src/components/ContactForm.tsx`.
 - Removed deps: `better-auth`, `@better-auth/prisma-adapter`, `@prisma/client`, `@prisma/adapter-libsql`, `prisma`, `dotenv`, `recharts`, `@react-three/fiber`, `three`, `@types/three`, `react-markdown`, `remark-gfm`, `react-hook-form`, `@hookform/resolvers`, `zod`, `@t3-oss/env-nextjs`, `sharp`, `shadcn`.
 - Temp scripts using `@/` aliases MUST live inside the project dir; `bun -e` breaks on PowerShell `$` escaping - use a temp file instead.
 

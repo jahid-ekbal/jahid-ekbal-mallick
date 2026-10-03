@@ -1,0 +1,8 @@
+services:
+  - type: static
+    name: jahid-ekbal-mallick
+    buildCommand: bun install && bun run build
+    staticPublishPath: out
+    envVars:
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://jahid-ekbal-mallick.onrender.com
