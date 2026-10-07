@@ -1,14 +1,12 @@
-import Footer from "@/components/Layout/Footer";
-import Header from "@/components/Layout/Header";
+import DockNav from "@/components/Layout/DockNav";
 
 export default function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
+      <main className="flex-1 pb-32">{children}</main>
+      <DockNav />
     </>
   );
 }

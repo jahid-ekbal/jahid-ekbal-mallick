@@ -1,8 +1,19 @@
 import HomeHero from "@/components/HomeHero";
-import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
+import { InView } from "@/components/shadcnui/in-view";
 import { getProfile } from "@/lib/data";
 import { site } from "@/lib/site";
+
+const riseVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const riseViewOptions = {
+  margin: "0px 0px -10% 0px",
+  amount: 0.12,
+  once: true,
+} as const;
 
 const Home = async () => {
   const profile = getProfile();
@@ -28,51 +39,19 @@ const Home = async () => {
 
       <div className="mx-auto max-w-5xl px-6">
         <Section title={"About me"}>
-          {profile.email && (
-            <p className="text-muted-foreground mb-4 text-sm">
-              <a
-                href={`mailto:${profile.email}`}
-                className="underline decoration-dotted underline-offset-4">
-                {profile.email}
-              </a>
-            </p>
-          )}
-
           <div className="text-muted-foreground space-y-5 text-lg leading-relaxed">
             {profile.bio.split("\n\n").map((paragraph, i) => (
-              <Reveal
+              <InView
                 key={i}
-                delay={i * 80}>
+                className="inview-rise"
+                variants={riseVariants}
+                transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.08 }}
+                viewOptions={riseViewOptions}>
                 <p>{paragraph}</p>
-              </Reveal>
+              </InView>
             ))}
           </div>
         </Section>
-
-        {profile.skills.length > 0 && (
-          <Section title={"Skills and tools"}>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {profile.skills.map((group, gi) => (
-                <Reveal
-                  key={group.category}
-                  delay={gi * 60}>
-                  <h3 className="text-foreground mb-3 text-base font-medium">
-                    {group.category}
-                  </h3>
-                  <ul className="flex flex-wrap gap-2.5">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="border-border text-muted-foreground rounded-full border px-3 py-1.5 text-sm">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-              ))}
-            </div>
-          </Section>
-        )}
       </div>
     </div>
   );

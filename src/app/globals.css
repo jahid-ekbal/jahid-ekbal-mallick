@@ -110,6 +110,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
+  --font-display: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -150,6 +151,62 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+:root {
+  --hero-accent: #f97316;
+  --hero-glow: rgba(249, 115, 22, 0.22);
+  --hero-ring: rgba(249, 115, 22, 0.45);
+}
+
+.dark {
+  --hero-accent: #fb923c;
+  --hero-glow: rgba(251, 146, 60, 0.2);
+  --hero-ring: rgba(251, 146, 60, 0.4);
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-geist-sans), sans-serif;
+}
+
+.hero-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--hero-accent);
+}
+
+@supports not (-webkit-text-stroke: 1px black) {
+  .hero-outline {
+    color: var(--hero-accent);
+  }
+}
+
+@keyframes hero-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hero-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(10px, -14px, 0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orbit,
+  .hero-drift {
+    animation: none !important;
+  }
+  .inview-rise {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @layer base {
   body {
     @apply bg-background text-foreground;
@@ -161,4 +218,10 @@
   html {
     @apply font-sans;
   }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

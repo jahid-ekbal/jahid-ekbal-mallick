@@ -65,14 +65,14 @@ const ProjectCard = ({
         />
       </div>
 
-      <h3 className="font-heading text-lg font-semibold tracking-tight">
+      <h3 className="font-heading line-clamp-1 text-lg font-semibold tracking-tight">
         {project.title}
       </h3>
       <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
         {project.summary}
       </p>
 
-      <ul className="mt-auto flex flex-wrap gap-1.5 pt-3">
+      <ul className="mt-auto flex h-[38px] flex-wrap gap-1.5 overflow-hidden pt-3">
         {project.techStack.slice(0, 4).map((tech) => (
           <li
             key={tech}

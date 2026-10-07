@@ -1,6 +1,7 @@
 import ProjectsGrid from "@/components/ProjectsGrid";
 import Reveal from "@/components/Reveal";
-import { getAllProjects } from "@/lib/data";
+import SkillsSection from "@/components/SkillsSection";
+import { getAllProjects, getProfile } from "@/lib/data";
 import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
@@ -11,6 +12,7 @@ export const metadata = pageMetadata(
 
 const ProjectsPage = () => {
   const projects = getAllProjects();
+  const profile = getProfile();
 
   return (
     <div className="mx-auto max-w-5xl px-6">
@@ -26,6 +28,7 @@ const ProjectsPage = () => {
         </Reveal>
 
         <div className="mt-10">
+          <SkillsSection skills={profile.skills} />
           <ProjectsGrid projects={projects} />
         </div>
       </section>

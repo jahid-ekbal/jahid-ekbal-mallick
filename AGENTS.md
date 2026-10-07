@@ -2,7 +2,9 @@
 
 # This is NOT the Next.js you know
 
-This version has breaking changes - APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
 
@@ -64,7 +66,7 @@ src/
   app/              # App Router (layout.tsx, sitemap.ts, robots.ts, opengraph-image.tsx)
   app/(site)/       # Public pages: page.tsx (Home), projects, journey, contact, resume
   components/
-    Layout/         # Header (static nav), Footer (static socials), ThemeToggleButton
+    Layout/         # DockNav (floating bottom dock), ThemeToggleButton
     Providers/      # ThemeProvider (next-themes)
     shadcnui/       # shadcn primitives
     profile.tsx     # Static profile content (edit here)
@@ -92,7 +94,7 @@ Content rules: profile, projects, and journey content live directly in `src/comp
 
 ## Key restrictions
 
-- **ESLint**: Locked at eslint@9.x until `eslint-plugin-react` ships v10 support. Do NOT bump.
+- **ESLint**: Locked at <eslint@9.x> until `eslint-plugin-react` ships v10 support. Do NOT bump.
 - **TypeScript**: Currently ^5.9. TS 7.0 (Go-native compiler) blocked until typescript-eslint API stabilizes (~Oct 2026). Do not migrate.
 
 ## Removed systems (do not re-add without asking)

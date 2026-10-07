@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import ThemeProvider from "@/components/Providers/ThemeProvider";
-import { geistMono, geistSans } from "@/lib/fonts";
+import { displayFont, geistMono, geistSans } from "@/lib/fonts";
 import { site } from "@/lib/site";
 import { LayoutProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -56,7 +56,12 @@ const RootLayout = ({ children }: LayoutProps) => {
   return (
     <html
       lang="en"
-      className={cn("antialiased", geistSans.variable, geistMono.variable)}
+      className={cn(
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        displayFont.variable,
+      )}
       suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col print:bg-white print:text-black print:scheme-light">
         <ThemeProvider

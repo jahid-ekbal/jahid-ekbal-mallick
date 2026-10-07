@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileDown, GraduationCap } from "lucide-react";
+import { FileDown, GraduationCap, Languages } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { buttonVariants } from "@/components/shadcnui/button";
@@ -11,6 +11,18 @@ export const metadata = pageMetadata(
   `Education and milestones of ${site.name}.`,
   "/journey",
 );
+
+const languages = [
+  { name: "TypeScript", percent: 46.39 },
+  { name: "Next.js", percent: 30.33 },
+  { name: "JavaScript", percent: 13.34 },
+  { name: "HTML", percent: 4.43 },
+  { name: "CSS", percent: 2.63 },
+  { name: "Prisma ORM SQL", percent: 1.41 },
+  { name: "C, C++, C#", percent: 1.0 },
+  { name: "Python", percent: 0.78 },
+  { name: "Vue", percent: 0.68 },
+];
 
 const Journey = () => {
   const profile = getProfile();
@@ -90,6 +102,44 @@ const Journey = () => {
                 Education details coming soon.
               </p>
             }
+          </div>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="mt-12">
+            <div className="flex items-center gap-2">
+              <Languages
+                size={18}
+                className="text-muted-foreground"
+              />
+              <h2 className="font-heading text-lg font-semibold tracking-tight">
+                Languages
+              </h2>
+            </div>
+            <ul className="mt-6 space-y-4">
+              {languages.map((lang) => (
+                <li key={lang.name}>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <span className="text-sm font-medium">{lang.name}</span>
+                    <span className="text-muted-foreground font-mono text-xs tabular-nums">
+                      {lang.percent.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div
+                    role="progressbar"
+                    aria-label={lang.name}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={lang.percent}
+                    className="bg-muted mt-1.5 h-1.5 w-full overflow-hidden rounded-full">
+                    <div
+                      className="h-full rounded-full bg-[var(--hero-accent)]"
+                      style={{ width: `${lang.percent}%` }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </Reveal>
       </section>
