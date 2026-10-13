@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useState, type KeyboardEvent } from "react";
-import {
-  FileText,
-  House,
-  LayoutGrid,
-  Mail,
-  Moon,
-  Route,
-  Sun,
-} from "lucide-react";
-import { useReducedMotion } from "motion/react";
+import { FileText, House, LayoutGrid, Mail, Route } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -39,7 +30,6 @@ const isActive = (pathname: string, href: string) => {
 const DockNav = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const reduceMotion = useReducedMotion();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -65,11 +55,8 @@ const DockNav = () => {
       aria-label="Primary"
       className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-40 -translate-x-1/2 print:hidden">
       <Dock
-        magnification={reduceMotion ? 40 : 80}
-        distance={reduceMotion ? 0 : 150}
-        spring={
-          reduceMotion ? { mass: 0.1, stiffness: 1000, damping: 50 } : undefined
-        }
+        magnification={80}
+        distance={150}
         className="rounded-[28px] border border-white/40 bg-white/30 shadow-2xl ring-1 ring-white/30 backdrop-blur-2xl backdrop-saturate-150 ring-inset dark:border-white/10 dark:bg-black/30 dark:ring-white/10">
         {pageItems.map(({ href, label, Icon }) => {
           const active = isActive(pathname, href);
@@ -108,29 +95,16 @@ const DockNav = () => {
           aria-pressed={isDark}>
           <DockLabel>Toggle theme</DockLabel>
           <DockIcon className="text-muted-foreground">
-            {reduceMotion ?
-              <button
-                type="button"
-                aria-label="Toggle theme"
-                aria-pressed={isDark}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-                className="focus-visible:ring-ring inline-flex size-5 items-center justify-center rounded-md focus-visible:ring-2 focus-visible:outline-none">
-                {isDark ?
-                  <Sun size={20} />
-                : <Moon size={20} />}
-                <span className="sr-only">Toggle theme</span>
-              </button>
-            : <AnimatedThemeToggler
-                theme={isDark ? "dark" : "light"}
-                onThemeChange={setTheme}
-                variant="circle"
-                duration={400}
-                fromCenter={false}
-                aria-label="Toggle theme"
-                aria-pressed={isDark}
-                className="focus-visible:ring-ring inline-flex size-5 items-center justify-center rounded-md focus-visible:ring-2 focus-visible:outline-none [&>svg]:size-5"
-              />
-            }
+            <AnimatedThemeToggler
+              theme={isDark ? "dark" : "light"}
+              onThemeChange={setTheme}
+              variant="circle"
+              duration={400}
+              fromCenter={false}
+              aria-label="Toggle theme"
+              aria-pressed={isDark}
+              className="focus-visible:ring-ring inline-flex size-5 items-center justify-center rounded-md focus-visible:ring-2 focus-visible:outline-none [&>svg]:size-5"
+            />
           </DockIcon>
         </DockItem>
       </Dock>

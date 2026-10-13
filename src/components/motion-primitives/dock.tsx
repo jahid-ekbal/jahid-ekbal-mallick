@@ -108,7 +108,7 @@ function Dock({
         height: height,
         scrollbarWidth: "none",
       }}
-      className="mx-2 flex max-w-full items-end overflow-x-auto">
+      className="mx-2 flex w-max max-w-[calc(100vw-1rem)] items-end overflow-x-auto">
       <motion.div
         onMouseMove={({ pageX }) => {
           isHovered.set(1);
@@ -119,7 +119,7 @@ function Dock({
           mouseX.set(Infinity);
         }}
         className={cn(
-          "mx-auto flex w-fit gap-4 rounded-2xl bg-gray-50 px-4 dark:bg-neutral-900",
+          "mx-auto flex w-fit gap-1 rounded-2xl bg-gray-50 px-2 sm:gap-4 sm:px-4 dark:bg-neutral-900",
           className,
         )}
         style={{ height: panelHeight }}

@@ -88,6 +88,10 @@ public/
 
 Content rules: profile, projects, and journey content live directly in `src/components/{profile,projects,journey}.tsx`, per user choice. `src/lib/data.ts` only re-exports them behind the old getter names so pages stay thin. Contact shows GitHub, LinkedIn, X, Discord, WhatsApp, Telegram + email only (no YouTube, no Instagram). Home shows portrait + headline + about + resume button + skills only (no featured projects).
 
+## Motion gotcha: reduced-motion kills all hero and dock animation
+
+`prefers-reduced-motion: reduce` (Windows animation effects off) disables hero particles and orbit (`motion-safe:` plus the `reduce` override in `globals.css`), dock magnification (`DockNav` used magnification 40 with distance 0), the animated theme transition (plain button fallback), and typewriter cycling. This looks like broken animation on live builds but is the OS setting, not hosting. Current choice: hero, dock, and theme toggle animate unconditionally. Typewriter still shows static text under reduced motion.
+
 ## Gitignore pattern: uploads
 
 `public/uploads/*` + `!public/uploads/.gitkeep` - ignores all uploaded files but keeps empty dir tracked via `.gitkeep`. Do not add `public/uploads/` itself to gitignore.

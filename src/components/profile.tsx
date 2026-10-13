@@ -39,7 +39,7 @@ export type Profile = {
 // Static profile content. Edit directly here.
 export const profile: Profile = {
   name: "Jahid Ekbal Mallick",
-  headline: "Full-Stack Developer and Digital Creator",
+  headline: "Full-Stack Developer and UI/UX Designer",
   tagline:
     "I craft digital experiences that merge technical precision with visual innovation to build engaging web solutions.",
   bio: [

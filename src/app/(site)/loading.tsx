@@ -41,7 +41,7 @@ const Loading = () => {
             <div
               key={i}
               className="border-border overflow-hidden rounded-xl border">
-              <div className="bg-muted aspect-[16/9] w-full animate-pulse" />
+              <div className="bg-muted aspect-video w-full animate-pulse" />
               <div className="space-y-3 p-5">
                 <div className="bg-muted h-4 w-1/3 animate-pulse rounded" />
                 <div className="bg-muted h-5 w-2/3 animate-pulse rounded" />

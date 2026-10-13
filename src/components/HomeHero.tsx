@@ -24,21 +24,12 @@ export default function HomeHero() {
       <div
         className="absolute inset-0"
         aria-hidden>
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-200/50 via-amber-100/30 to-transparent dark:from-orange-500/10 dark:via-amber-500/5 dark:to-transparent" />
-        <div className="absolute top-[8%] right-[-12%] size-[34rem] rounded-full bg-[var(--hero-glow)] blur-3xl" />
-        <div className="absolute bottom-[-25%] left-[-12%] size-[26rem] rounded-full bg-orange-100/60 blur-3xl dark:bg-orange-500/10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--background)]" />
+        <span className="hero-drift absolute top-[22%] left-[46%] size-1.5 animate-[hero-drift_7s_ease-in-out_infinite] rounded-full bg-[var(--hero-accent)]" />
+        <span className="hero-drift absolute top-[64%] left-[8%] size-1 animate-[hero-drift_9s_ease-in-out_infinite] rounded-full bg-[var(--hero-accent)]/70" />
+        <span className="hero-drift absolute right-[10%] bottom-[18%] size-2 animate-[hero-drift_11s_ease-in-out_infinite] rounded-full border border-[var(--hero-ring)]" />
       </div>
 
-      <div
-        className="absolute inset-0"
-        aria-hidden>
-        <span className="hero-drift absolute top-[22%] left-[46%] size-1.5 rounded-full bg-[var(--hero-accent)] motion-safe:animate-[hero-drift_7s_ease-in-out_infinite]" />
-        <span className="hero-drift absolute top-[64%] left-[8%] size-1 rounded-full bg-[var(--hero-accent)]/70 motion-safe:animate-[hero-drift_9s_ease-in-out_infinite]" />
-        <span className="hero-drift absolute right-[10%] bottom-[18%] size-2 rounded-full border border-[var(--hero-ring)] motion-safe:animate-[hero-drift_11s_ease-in-out_infinite]" />
-      </div>
-
-      <div className="relative mx-auto grid w-full max-w-5xl gap-12 px-6 py-14 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div className="relative mx-auto grid w-full max-w-5xl gap-12 px-6 pt-14 pb-28 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-16">
         <div className="min-w-0">
           <p className="border-border bg-muted/50 text-muted-foreground mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
             <span className="relative flex size-2">
@@ -52,11 +43,11 @@ export default function HomeHero() {
             <span className="text-foreground block text-2xl font-semibold tracking-tight sm:text-3xl">
               {profile.name}
             </span>
-            <span className="font-display mt-4 block text-6xl leading-[0.95] tracking-tight text-[var(--hero-accent)] uppercase sm:text-7xl xl:text-8xl">
+            <span className="font-display mt-4 block text-6xl leading-[0.95] tracking-tight break-words text-[var(--hero-accent)] uppercase sm:text-7xl xl:text-8xl">
               {solidRole}
             </span>
             {outlineRole && (
-              <span className="font-display hero-outline mt-1 block text-6xl leading-[0.95] tracking-tight uppercase sm:text-7xl xl:text-8xl">
+              <span className="font-display hero-outline mt-1 block text-6xl leading-[0.95] tracking-tight break-words uppercase sm:text-7xl xl:text-8xl">
                 {outlineRole}
               </span>
             )}
@@ -72,7 +63,7 @@ export default function HomeHero() {
           </p>
         </div>
 
-        <div className="relative mx-auto aspect-square w-[300px] sm:w-[360px] xl:w-[420px]">
+        <div className="relative mx-auto aspect-square w-full max-w-[300px] shrink-0 sm:max-w-[360px] xl:max-w-[420px]">
           <div
             className="absolute inset-0 rounded-full bg-[var(--hero-glow)] blur-3xl"
             aria-hidden
@@ -82,7 +73,7 @@ export default function HomeHero() {
             aria-hidden
           />
           <div
-            className="hero-orbit absolute -inset-5 motion-safe:animate-[hero-orbit_18s_linear_infinite] sm:-inset-7"
+            className="hero-orbit absolute -inset-5 animate-[hero-orbit_18s_linear_infinite] sm:-inset-7"
             aria-hidden>
             <span className="absolute top-0 left-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--hero-accent)] shadow-[0_0_16px_var(--hero-glow)]" />
           </div>
@@ -94,14 +85,14 @@ export default function HomeHero() {
             priority
             className="relative size-full rounded-full border object-cover shadow-2xl"
           />
-          <span className="border-border absolute top-8 -right-2 rounded-full border bg-[var(--background)]/85 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur sm:-right-5">
+          <span className="border-border absolute top-8 right-2 rounded-full border bg-[var(--background)]/85 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur sm:-right-5">
             <span
               className="mr-1.5 inline-block size-1.5 rounded-full bg-[var(--hero-accent)]"
               aria-hidden
             />
             {pillTop}
           </span>
-          <span className="border-border absolute bottom-8 -left-2 rounded-full border bg-[var(--background)]/85 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur sm:-left-5">
+          <span className="border-border absolute bottom-8 left-2 rounded-full border bg-[var(--background)]/85 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur sm:-left-5">
             <span
               className="mr-1.5 inline-block size-1.5 rounded-full bg-[var(--hero-accent)]"
               aria-hidden

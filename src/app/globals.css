@@ -197,10 +197,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-orbit,
-  .hero-drift {
-    animation: none !important;
-  }
   .inview-rise {
     opacity: 1 !important;
     transform: none !important;
@@ -208,6 +204,10 @@
 }
 
 @layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
   body {
     @apply bg-background text-foreground;
   }

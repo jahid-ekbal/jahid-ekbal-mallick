@@ -6,7 +6,7 @@ const roles = [
   "Full-Stack Developer",
   "React and Next.js builder",
   "UI and UX crafter",
-  "Digital creator",
+  "UI/UX Designer",
 ];
 
 export default function Typewriter() {
