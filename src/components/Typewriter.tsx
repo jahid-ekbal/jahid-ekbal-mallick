@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+import { profile } from "@/components/profile";
+
 const roles = [
-  "Full-Stack Developer",
+  profile.headline.split(/\s+and\s+/i)[0] ?? "Full-Stack Developer",
   "React and Next.js builder",
   "UI and UX crafter",
   "UI/UX Designer",
@@ -58,7 +60,7 @@ export default function Typewriter() {
         {display}
         <span
           aria-hidden
-          className="animate-pulse">
+          className="motion-safe:animate-pulse">
           |
         </span>
       </span>

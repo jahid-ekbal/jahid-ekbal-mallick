@@ -6,7 +6,7 @@ export const site = {
   role: "Full-Stack Developer & Digital Creator",
   title: "Jahid Ekbal Mallick | Full-Stack Developer & Digital Creator",
   description:
-    "Full-Stack Developer and Digital Creator crafting digital experiences that merge technical precision with visual innovation, React, Next.js, TypeScript and UI/UX.",
+    "Full-stack developer from Kolkata building accessible React and Next.js apps, plus UI and UX design, social visuals, and video assets.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://jahid-ekbal-mallick.onrender.com",

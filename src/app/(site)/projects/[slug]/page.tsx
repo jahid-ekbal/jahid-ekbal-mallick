@@ -20,13 +20,15 @@ export async function generateMetadata(
   const project = getProjectBySlug(slug);
   if (!project) return {};
 
+  const description = `${project.title}: ${project.summary} Built with ${project.techStack.join(", ")}.`;
+
   return {
     title: project.title,
-    description: project.summary,
+    description,
     alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
       title: project.title,
-      description: project.summary,
+      description,
       type: "article",
       url: `/projects/${project.slug}`,
       images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
@@ -34,7 +36,7 @@ export async function generateMetadata(
     twitter: {
       card: "summary_large_image",
       title: project.title,
-      description: project.summary,
+      description,
       images: ["/opengraph-image"],
     },
   };
@@ -48,16 +50,26 @@ const ProjectPage = async (props: PageProps<"/projects/[slug]">) => {
   return (
     <div className="mx-auto max-w-5xl px-6">
       <section className="min-h-[70svh] py-14 sm:py-16">
-        <Link
-          href="/projects"
-          prefetch={false}
-          className="group text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors">
-          <ArrowLeft
-            size={14}
-            className="transition-transform duration-200 group-hover:-translate-x-0.5"
-          />{" "}
-          All projects
-        </Link>
+        <nav
+          aria-label="Breadcrumb"
+          className="text-muted-foreground flex items-center gap-1.5 text-sm">
+          <Link
+            href="/projects"
+            prefetch={false}
+            className="group hover:text-foreground focus-visible:ring-ring inline-flex items-center gap-1.5 rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none">
+            <ArrowLeft
+              size={14}
+              className="transition-transform duration-200 group-hover:-translate-x-0.5"
+            />{" "}
+            All projects
+          </Link>
+          <span aria-hidden>/</span>
+          <span
+            aria-current="page"
+            className="text-foreground">
+            {project.title}
+          </span>
+        </nav>
 
         <Reveal>
           <p className="text-muted-foreground mt-8 text-xs font-medium tracking-wide uppercase">

@@ -35,7 +35,7 @@ Path aliases: `@/*` → `./src/*`.
 
 ## Agent behavior
 
-- **Ask questions** when ambiguous or before destructive actions. Prefer one batched question.
+- **Ask questions** when ambiguous or before destructive actions. Ask one question at a time.
 - **Update this file** when you discover non-obvious gotchas, fixes, or conventions.
 - **Use skills + MCPs** before writing code matching `next-*`, etc. Use `shadcn` MCP for component add/search/audit.
 
@@ -43,7 +43,7 @@ Path aliases: `@/*` → `./src/*`.
 
 - **Primary**: `bun lint` - runs `next typegen && tsc --noEmit && eslint`
 - **Build gate**: `bun run build` - `next build` (static export to `out/`)
-- **Preview**: `bun run start` - serves `./out` on port 3000
+- **Preview**: `bun run start` - serves `./out` on port 1000
 - **Browser check**: `playwright-cli` in `--headed` mode across `/`, `/projects`, `/projects/[slug]`, `/journey`, `/contact`, `/resume`, with screenshots per route
 
 ## Commands
@@ -86,11 +86,11 @@ public/
   uploads/            # User uploads (all files ignored except .gitkeep)
 ```
 
-Content rules: profile, projects, and journey content live directly in `src/components/{profile,projects,journey}.tsx`, per user choice. `src/lib/data.ts` only re-exports them behind the old getter names so pages stay thin. Contact shows GitHub, LinkedIn, X, Discord, WhatsApp, Telegram + email only (no YouTube, no Instagram). Home shows portrait + headline + about + resume button + skills only (no featured projects).
+Content rules: profile, projects, and journey content live directly in `src/components/{profile,projects,journey}.tsx`, per user choice. `src/lib/data.ts` only re-exports them behind the old getter names so pages stay thin. Contact shows GitHub, LinkedIn, X, Discord, WhatsApp, Telegram + email only (no YouTube, no Instagram). Home shows portrait + headline + about only (no featured projects, no skills, no hero buttons). Skills live on Projects and Resume.
 
 ## Motion gotcha: reduced-motion kills all hero and dock animation
 
-`prefers-reduced-motion: reduce` (Windows animation effects off) disables hero particles and orbit (`motion-safe:` plus the `reduce` override in `globals.css`), dock magnification (`DockNav` used magnification 40 with distance 0), the animated theme transition (plain button fallback), and typewriter cycling. This looks like broken animation on live builds but is the OS setting, not hosting. Current choice: hero, dock, and theme toggle animate unconditionally. Typewriter still shows static text under reduced motion.
+`prefers-reduced-motion: reduce` (Windows animation effects off) disables hero particles and orbit (`motion-safe:` plus the `reduce` override in `globals.css`), dock magnification, the animated theme transition, and typewriter cycling. This looks like broken animation on live builds but is the OS setting, not hosting. Current choice: hero orbit, drift, ping, dock spring, and theme transition are gated behind `motion-safe:` so reduced motion calms them. Typewriter still shows static text under reduced motion.
 
 ## Gitignore pattern: uploads
 

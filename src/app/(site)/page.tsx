@@ -2,7 +2,13 @@ import HomeHero from "@/components/HomeHero";
 import Section from "@/components/Section";
 import { InView } from "@/components/shadcnui/in-view";
 import { getProfile } from "@/lib/data";
-import { site } from "@/lib/site";
+import { pageMetadata, site } from "@/lib/site";
+
+export const metadata = pageMetadata(
+  "Home",
+  `Jahid Ekbal Mallick, full-stack developer and UI and UX designer from Kolkata. Read about me, my journey, and my projects.`,
+  "/",
+);
 
 const riseVariants = {
   hidden: { opacity: 0, y: 24 },

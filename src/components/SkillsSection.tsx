@@ -14,7 +14,15 @@ const riseViewOptions = {
 } as const;
 
 const SkillsSection = ({ skills }: { skills: SkillGroup[] }) => {
-  if (skills.length === 0) return null;
+  if (skills.length === 0) {
+    return (
+      <Section title={"Skills and tools"}>
+        <p className="text-muted-foreground text-sm">
+          Skills list is being updated. See the resume for the latest tools.
+        </p>
+      </Section>
+    );
+  }
 
   return (
     <Section title={"Skills and tools"}>

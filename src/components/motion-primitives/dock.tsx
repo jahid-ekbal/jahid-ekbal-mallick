@@ -41,8 +41,9 @@ export type DockProps = {
 export type DockItemProps = {
   className?: string;
   children: ReactNode;
+  href?: string;
   onClick?: () => void;
-  onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLElement>;
   "aria-label"?: string;
   "aria-current"?: "page" | boolean;
   "aria-pressed"?: boolean;
@@ -58,7 +59,7 @@ export type DockIconProps = {
   children: ReactNode;
 };
 
-export type DocContextType = {
+export type DockContextType = {
   mouseX: MotionValue;
   spring: SpringOptions;
   magnification: number;
@@ -67,10 +68,10 @@ export type DocContextType = {
 
 export type DockProviderProps = {
   children: ReactNode;
-  value: DocContextType;
+  value: DockContextType;
 };
 
-const DockContext = createContext<DocContextType | undefined>(undefined);
+const DockContext = createContext<DockContextType | undefined>(undefined);
 
 function DockProvider({ children, value }: DockProviderProps) {
   return <DockContext.Provider value={value}>{children}</DockContext.Provider>;
@@ -123,8 +124,7 @@ function Dock({
           className,
         )}
         style={{ height: panelHeight }}
-        role="toolbar"
-        aria-label="Application dock">
+        aria-label="Primary">
         <DockProvider value={{ mouseX, spring, distance, magnification }}>
           {children}
         </DockProvider>
@@ -136,13 +136,14 @@ function Dock({
 function DockItem({
   children,
   className,
+  href,
   onClick,
   onKeyDown,
   "aria-label": ariaLabel,
   "aria-current": ariaCurrent,
   "aria-pressed": ariaPressed,
 }: DockItemProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
 
   const { distance, magnification, mouseX, spring } = useDock();
 
@@ -161,35 +162,53 @@ function DockItem({
 
   const width = useSpring(widthTransform, spring);
 
+  const content = Children.map(children, (child) =>
+    cloneElement(
+      child as ReactElement<{
+        width: MotionValue<number>;
+        isHovered: MotionValue<number>;
+      }>,
+      { width, isHovered },
+    ),
+  );
+
+  const sharedProps = {
+    style: { width },
+    onHoverStart: () => isHovered.set(1),
+    onHoverEnd: () => isHovered.set(0),
+    onFocus: () => isHovered.set(1),
+    onBlur: () => isHovered.set(0),
+    className: cn(
+      "relative inline-flex items-center justify-center focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
+      className,
+    ),
+    "aria-label": ariaLabel,
+    "aria-current": ariaCurrent,
+    "aria-pressed": ariaPressed,
+  };
+
+  if (href) {
+    return (
+      <motion.a
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
+        onClick={onClick}
+        onKeyDown={onKeyDown as KeyboardEventHandler<HTMLAnchorElement>}
+        {...sharedProps}>
+        {content}
+      </motion.a>
+    );
+  }
+
   return (
     <motion.div
-      ref={ref}
-      style={{ width }}
-      onHoverStart={() => isHovered.set(1)}
-      onHoverEnd={() => isHovered.set(0)}
-      onFocus={() => isHovered.set(1)}
-      onBlur={() => isHovered.set(0)}
-      className={cn(
-        "relative inline-flex items-center justify-center",
-        className,
-      )}
+      ref={ref as React.Ref<HTMLDivElement>}
       tabIndex={0}
       role="button"
-      aria-haspopup="true"
-      aria-label={ariaLabel}
-      aria-current={ariaCurrent}
-      aria-pressed={ariaPressed}
       onClick={onClick}
-      onKeyDown={onKeyDown}>
-      {Children.map(children, (child) =>
-        cloneElement(
-          child as ReactElement<{
-            width: MotionValue<number>;
-            isHovered: MotionValue<number>;
-          }>,
-          { width, isHovered },
-        ),
-      )}
+      onKeyDown={onKeyDown as KeyboardEventHandler<HTMLDivElement>}
+      {...sharedProps}>
+      {content}
     </motion.div>
   );
 }

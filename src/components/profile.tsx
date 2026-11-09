@@ -18,7 +18,7 @@ export type ExperienceItem = {
 
 export type EducationItem = {
   degree: string;
-  school: string;
+  school?: string;
   period: string;
   description?: string;
   url?: string;
@@ -41,11 +41,11 @@ export const profile: Profile = {
   name: "Jahid Ekbal Mallick",
   headline: "Full-Stack Developer and UI/UX Designer",
   tagline:
-    "I craft digital experiences that merge technical precision with visual innovation to build engaging web solutions.",
+    "I build fast, accessible websites from Kolkata that pair clean React code with careful UI and visual craft.",
   bio: [
-    "I am Jahid Ekbal Mallick, a Full-Stack Developer and Digital Creator from Kolkata, India. I craft digital experiences that merge technical precision with visual innovation, bridging functionality and aesthetics to build engaging web solutions.",
-    "Development expertise: HTML5, CSS3, JavaScript (ES6+), React, Next.js, TypeScript, Tailwind CSS, Bootstrap, with responsive, mobile-first builds. Design specialization: UI/UX prototyping in Figma, Adobe Photoshop and Premiere Pro, Blender 3D, digital advertising, social content and thumbnail production.",
-    "What I deliver: responsive websites, interactive web apps, user-centric interfaces, social campaigns, video and thumbnails, and custom ad assets. My workflow combines clean, maintainable code with compelling visuals.",
+    "I am Jahid Ekbal Mallick, a Full-Stack Developer and Digital Creator based in Kolkata, India. I study Geography in an honours program while building on the side with React, Next.js, and TypeScript, and I bring the same curiosity for places and people into how I design and ship for the web.",
+    "My school years shaped how I work. I joined Paschim Joynagar J.C. High School (H.S.) in class 5, chose the arts stream in class 11, and passed higher secondary in 2026 before starting my current studies. That long run of classes taught me steady, patient delivery, and my drama years from class 6 to 11 taught me timing, teamwork, and how to hold a room. I performed at Rabindra Sadan in Kolkata, at Gobardanga Town Hall three times, and on school and other school stages.",
+    "I have been drawn to technology since childhood, starting with games and growing into esports community play on PC. Today I focus that same energy on the web: responsive websites, interactive apps, user interface work, and social and campaign visuals. My stack covers HTML5, CSS3, JavaScript (ES6+), React, Next.js, TypeScript, Tailwind CSS, and Bootstrap, with UI and UX prototyping in Figma, Photoshop and Premiere Pro, and Blender for 3D and video assets.",
   ].join("\n\n"),
   location: "Kolkata, India",
   email: "jahidekbalmallick@gmail.com",
@@ -93,9 +93,6 @@ export const profile: Profile = {
         "Photoshop",
         "Premiere Pro",
         "Blender",
-        "VS Code",
-        "Git",
-        "GitHub",
         "After Effects",
         "Illustrator",
         "Canva",
@@ -103,6 +100,10 @@ export const profile: Profile = {
         "Adobe XD",
         "Filmora",
       ],
+    },
+    {
+      category: "Tools and delivery",
+      items: ["VS Code", "Git", "GitHub"],
     },
     {
       category: "Delivery",

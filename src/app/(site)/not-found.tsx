@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { House } from "lucide-react";
 
-import { Button } from "@/components/shadcnui/button";
+import { buttonVariants } from "@/components/shadcnui/button";
 
 const NotFound = () => (
   <div className="mx-auto grid max-w-5xl flex-1 place-items-center px-6 py-24">
@@ -13,16 +13,14 @@ const NotFound = () => (
       <p className="text-muted-foreground mx-auto mt-4 max-w-sm">
         The page you are looking for does not exist or has been moved.
       </p>
-      <Button
-        className="mt-8"
-        nativeButton={false}
-        render={<Link href={"/"} />}>
+      <Link
+        href="/"
+        className={
+          buttonVariants({ variant: "secondary", size: "sm" }) + " mt-8"
+        }>
         Back to home
-        <House
-          data-icon="inline-end"
-          className="transition-transform duration-200 group-hover/button:not-disabled:translate-x-0.5"
-        />
-      </Button>
+        <House />
+      </Link>
     </div>
   </div>
 );

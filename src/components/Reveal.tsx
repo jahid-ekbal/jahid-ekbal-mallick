@@ -51,7 +51,7 @@ export default function Reveal({
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
       className={cn(
-        "transition-all duration-700 ease-out",
+        "transition-[opacity,transform] duration-700 ease-out will-change-[transform,opacity]",
         show ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
         className,
       )}>

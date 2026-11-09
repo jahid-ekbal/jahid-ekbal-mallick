@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date("2026-01-01");
+  const lastModified = new Date("2026-11-10");
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/projects",

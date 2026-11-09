@@ -31,7 +31,7 @@ const ProjectCard = ({
     prefetch={false}
     href={`/projects/${project.slug}`}
     className={cn(
-      "group border-border bg-card hover:border-ring/50 flex flex-col overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md",
+      "group border-border bg-card hover:border-ring/50 focus-visible:ring-ring flex flex-col overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none",
       className,
     )}>
     <div
@@ -61,7 +61,7 @@ const ProjectCard = ({
         </span>
         <ArrowUpRight
           size={16}
-          className="text-muted-foreground translate-x-0.5 -translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
+          className="text-muted-foreground translate-x-0.5 -translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
         />
       </div>
 

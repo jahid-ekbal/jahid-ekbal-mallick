@@ -6,7 +6,7 @@ import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Projects",
-  `Projects built by ${site.name}: full-stack apps, tools, and experiments.`,
+  `Projects built by ${site.name}: Lumiwalls web app, Checkly tasks, Basic Auth Profile, C++ Forensic Engine, and Moderation Bot.`,
   "/projects",
 );
 

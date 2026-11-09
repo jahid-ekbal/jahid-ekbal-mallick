@@ -178,6 +178,33 @@
   }
 }
 
+::selection {
+  background: color-mix(in oklch, var(--hero-accent) 30%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 @keyframes hero-orbit {
   to {
     transform: rotate(360deg);
@@ -200,6 +227,15 @@
   .inview-rise {
     opacity: 1 !important;
     transform: none !important;
+  }
+  .hero-orbit,
+  .hero-drift {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
   }
 }
 

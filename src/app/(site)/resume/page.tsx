@@ -1,12 +1,12 @@
 import Image from "next/image";
 
 import ResumePrintButton from "@/components/ResumePrintButton";
-import { getProfile } from "@/lib/data";
+import { getAllProjects, getProfile } from "@/lib/data";
 import { pageMetadata, site } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Resume",
-  `Resume of ${site.name}, full-stack developer and UI/UX designer.`,
+  `Resume of ${site.name}: experience, education, and skills in React, Next.js, TypeScript, and UI and UX design.`,
   "/resume",
 );
 
@@ -15,10 +15,13 @@ const socialLabels: Record<string, string> = {
   linkedin: "LinkedIn",
   twitter: "X",
   discord: "Discord",
+  whatsapp: "WhatsApp",
+  telegram: "Telegram",
 };
 
 const ResumePage = () => {
   const profile = getProfile();
+  const projects = getAllProjects();
 
   const socialEntries = Object.entries(profile.socials).filter(
     (entry): entry is [string, string] =>
@@ -54,11 +57,72 @@ const ResumePage = () => {
           Summary
         </h2>
         <p className="text-muted-foreground mt-3 text-sm leading-relaxed print:text-xs">
-          Full-Stack Developer and Digital Creator from Kolkata, India, building
-          responsive web apps and visual content with React, Next.js, and
-          TypeScript.
+          Full-stack developer and digital creator from Kolkata, India, focused
+          on accessible React and Next.js apps, UI and UX design, and visual
+          content for the web.
         </p>
       </section>
+
+      {profile.experiences.length > 0 && (
+        <section className="mt-6 print:mt-4">
+          <h2 className="border-border border-b pb-1 text-sm font-semibold tracking-wide uppercase print:text-xs">
+            Experience
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {profile.experiences.map((exp) => (
+              <li key={`${exp.role}-${exp.company}`}>
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="text-sm font-medium print:text-xs">
+                    {exp.role} | {exp.company}
+                  </h3>
+                  {exp.period && (
+                    <span className="text-muted-foreground font-mono text-xs">
+                      {exp.period}
+                    </span>
+                  )}
+                </div>
+                {exp.description && (
+                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed print:text-xs">
+                    {exp.description}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {projects.length > 0 && (
+        <section className="mt-6 print:mt-4">
+          <h2 className="border-border border-b pb-1 text-sm font-semibold tracking-wide uppercase print:text-xs">
+            Selected Projects
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {projects.map((project) => (
+              <li key={project.slug}>
+                <h3 className="text-sm font-medium print:text-xs">
+                  {project.title}
+                  {project.repoUrl && (
+                    <>
+                      {" "}
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground text-xs underline underline-offset-2">
+                        {project.repoUrl.replace(/^https?:\/\//, "")}
+                      </a>
+                    </>
+                  )}
+                </h3>
+                <p className="text-muted-foreground mt-1 text-sm leading-relaxed print:text-xs">
+                  {project.summary}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {socialEntries.length > 0 && (
         <section className="mt-6 print:mt-4">
@@ -106,10 +170,11 @@ const ResumePage = () => {
           </h2>
           <ul className="mt-3 space-y-3">
             {profile.education.map((edu) => (
-              <li key={`${edu.degree}-${edu.school}`}>
+              <li key={`${edu.degree}-${edu.school ?? "no-school"}`}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="text-sm font-medium print:text-xs">
-                    {edu.degree} | {edu.school}
+                    {edu.degree}
+                    {edu.school ? ` | ${edu.school}` : ""}
                     {edu.url && (
                       <>
                         {" "}

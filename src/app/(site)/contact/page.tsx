@@ -9,7 +9,7 @@ import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Contact",
-  "Connect with me on social platforms. Open a card, copy a link, or scan a QR code.",
+  "Contact Jahid Ekbal Mallick from Kolkata by email or social platforms. GitHub, LinkedIn, X, WhatsApp, and Telegram.",
   "/contact",
 );
 
@@ -21,15 +21,16 @@ const ContactPage = () => {
       <section className="min-h-[70svh] py-14 sm:py-16">
         <Reveal>
           <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
-            Connect
+            Contact
           </h1>
           <p className="text-muted-foreground mt-4 max-w-xl">
-            Find me on the platforms I use. Open a card to visit, or use the
-            menu on each card to copy the link or scan a QR code.
+            I am based in Kolkata and work remotely. Email is the fastest
+            channel for project notes. On each card you can open the link, copy
+            it, or scan a QR code. No account or login needed to reach me.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
-              href={`mailto:${profile.email}`}
+              href={`mailto:${profile.email}?subject=${encodeURIComponent("Hello Jahid - project note")}&body=${encodeURIComponent("Hi Jahid,\n\n")}`}
               className={buttonVariants({ variant: "secondary", size: "sm" })}>
               Email me
             </a>

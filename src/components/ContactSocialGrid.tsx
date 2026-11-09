@@ -33,6 +33,7 @@ import type { Socials } from "@/lib/data";
 type SocialEntry = {
   key: keyof Socials | "email";
   label: string;
+  handle: string;
   href: string;
   Icon: React.ComponentType<{
     width?: number;
@@ -47,6 +48,21 @@ type Props = {
   email?: string | null;
 };
 
+const handleFor = (
+  key: keyof Socials | "email",
+  href: string,
+  email?: string | null,
+) => {
+  if (key === "email") return email ?? href;
+  if (key === "discord") return "Discord user link";
+  if (key === "github") return "@jahid-ekbal";
+  if (key === "linkedin") return "jahid-developer";
+  if (key === "twitter") return "@JAHIDEKBAL01";
+  if (key === "whatsapp") return "WhatsApp chat";
+  if (key === "telegram") return "@jahidekbal";
+  return href.replace(/^https?:\/\//, "");
+};
+
 export default function ContactSocialGrid({ socials, email }: Props) {
   const [qr, setQr] = useState<{ href: string; label: string } | null>(null);
 
@@ -54,31 +70,42 @@ export default function ContactSocialGrid({ socials, email }: Props) {
     {
       key: "github",
       label: "GitHub",
+      handle: handleFor("github", socials.github ?? ""),
       href: socials.github ?? "",
       Icon: GitHubIcon,
     },
     {
       key: "linkedin",
       label: "LinkedIn",
+      handle: handleFor("linkedin", socials.linkedin ?? ""),
       href: socials.linkedin ?? "",
       Icon: LinkedInIcon,
     },
-    { key: "twitter", label: "X", href: socials.twitter ?? "", Icon: XIcon },
+    {
+      key: "twitter",
+      label: "X",
+      handle: handleFor("twitter", socials.twitter ?? ""),
+      href: socials.twitter ?? "",
+      Icon: XIcon,
+    },
     {
       key: "discord",
       label: "Discord",
+      handle: handleFor("discord", socials.discord ?? ""),
       href: socials.discord ?? "",
       Icon: DiscordIcon,
     },
     {
       key: "whatsapp",
       label: "WhatsApp",
+      handle: handleFor("whatsapp", socials.whatsapp ?? ""),
       href: socials.whatsapp ?? "",
       Icon: WhatsAppIcon,
     },
     {
       key: "telegram",
       label: "Telegram",
+      handle: handleFor("telegram", socials.telegram ?? ""),
       href: socials.telegram ?? "",
       Icon: TelegramIcon,
     },
@@ -88,6 +115,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
     entries.push({
       key: "email",
       label: "Email",
+      handle: handleFor("email", `mailto:${email}`, email),
       href: `mailto:${email}`,
       Icon: Mail,
     });
@@ -96,7 +124,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
   if (entries.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
-        No contact links configured yet.
+        No contact links configured yet. Reach me at the email in the header.
       </p>
     );
   }
@@ -138,7 +166,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
   return (
     <>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {entries.map(({ key, label, href, Icon }) => {
+        {entries.map(({ key, label, handle, href, Icon }) => {
           const isEmail = href.startsWith("mailto:");
           return (
             <div key={key}>
@@ -150,7 +178,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                       href={href}
                       target={isEmail ? undefined : "_blank"}
                       rel={isEmail ? undefined : "noopener noreferrer"}
-                      aria-label={`${label}, click to open, right-click for more options`}
+                      aria-label={`Open ${label} in a new tab`}
                     />
                   }>
                   <Card className="hover:border-ring/50 aspect-square cursor-pointer p-0 transition-all select-none hover:shadow-md">
@@ -165,10 +193,34 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                       <span className="text-sm font-medium tracking-tight">
                         {label}
                       </span>
-                      <span className="text-muted-foreground hidden max-w-full truncate px-2 text-[10px] break-all sm:block">
-                        {href
-                          .replace(/^https?:\/\//, "")
-                          .replace(/^mailto:/, "")}
+                      <span className="text-muted-foreground max-w-full truncate px-2 text-xs">
+                        {handle}
+                      </span>
+                      <span className="flex min-h-11 items-center gap-2">
+                        <button
+                          type="button"
+                          aria-label={`Copy ${label} link`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            void handleCopy(href, label);
+                          }}
+                          className="focus-visible:ring-ring inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-xs font-medium underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none">
+                          <Copy size={14} />
+                          Copy
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Show QR code for ${label}`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setQr({ href, label });
+                          }}
+                          className="focus-visible:ring-ring inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-xs font-medium underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none">
+                          <QrCode size={14} />
+                          QR
+                        </button>
                       </span>
                     </CardContent>
                   </Card>
@@ -178,7 +230,7 @@ export default function ContactSocialGrid({ socials, email }: Props) {
                     Go to {label}
                     <ArrowUpRight className="ml-auto" />
                   </ContextMenuItem>
-                  <ContextMenuItem onClick={() => handleCopy(href, label)}>
+                  <ContextMenuItem onClick={() => void handleCopy(href, label)}>
                     Copy link
                     <Copy className="ml-auto" />
                   </ContextMenuItem>

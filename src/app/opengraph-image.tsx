@@ -24,7 +24,7 @@ export default function OgImage() {
         padding: "80px",
         background: "#0a0a0a",
         backgroundImage:
-          "radial-gradient(circle at 25% 20%, rgba(99,102,241,0.22), transparent 50%)",
+          "radial-gradient(circle at 25% 20%, rgba(249,115,22,0.28), transparent 50%)",
         color: "#fafafa",
       }}>
       <div
